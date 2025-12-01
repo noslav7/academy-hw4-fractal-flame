@@ -4,7 +4,6 @@ import academy.config.FractalConfig;
 import academy.math.MutablePoint;
 import academy.math.Point;
 import academy.variation.VariationDefinition;
-import java.util.List;
 import java.util.SplittableRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,13 +1,10 @@
 package academy.config;
 
-import academy.color.RgbColor;
-import academy.variation.VariationDefinition;
-import academy.variation.VariationParameters;
-import academy.variation.VariationType;
 import academy.camera.CameraSettings;
 import academy.color.Palette;
 import academy.color.RgbColor;
 import academy.variation.VariationDefinition;
+import academy.variation.VariationParameters;
 import academy.variation.VariationType;
 import java.nio.file.Path;
 import java.util.ArrayList;
