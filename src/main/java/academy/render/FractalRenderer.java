@@ -6,7 +6,6 @@ import academy.color.RgbColor;
 import academy.config.FractalConfig;
 import academy.math.MutablePoint;
 import academy.math.Point;
-import academy.variation.VariationDefinition;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;

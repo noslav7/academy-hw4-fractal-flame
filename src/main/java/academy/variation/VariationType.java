@@ -2,7 +2,6 @@ package academy.variation;
 
 import academy.math.Point;
 import java.util.SplittableRandom;
-import java.util.SplittableRandom;
 
 /**
  * Subset of flame variations described by Draves. Each variation transforms a cartesian point
