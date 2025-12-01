@@ -1,40 +1,93 @@
 package academy;
 
+import academy.config.ConfigBuilder;
+import academy.config.ConfigBuilder.CliOverrides;
+import academy.config.ConfigLoader;
+import academy.config.FractalConfig;
+import academy.config.JsonFractalConfig;
+import academy.render.FractalRenderer;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
-import java.io.File;
-import java.io.IOException;
-import java.io.UncheckedIOException;
+import java.nio.file.Path;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 
-@Command(name = "Application Example", version = "Example 1.0", mixinStandardHelpOptions = true)
+@Command(name = "fractal-flame", mixinStandardHelpOptions = true, version = "1.0")
 public class Application implements Runnable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
-    private static final ObjectReader YAML_READER =
-            new ObjectMapper(new YAMLFactory()).findAndRegisterModules().reader();
 
     @Option(
-            names = {"-s", "--font-size"},
-            description = "Font size",
-            defaultValue = "12")
-    int fontSize;
+            names = {"-w", "--width"},
+            description = "Image width in pixels")
+    private Integer width;
 
-    @Parameters(
-            paramLabel = "<word>",
-            defaultValue = "Hello, picocli",
-            description = "Words to be translated into ASCII art.")
-    private String[] words;
+    @Option(
+            names = {"-h", "--height"},
+            description = "Image height in pixels")
+    private Integer height;
+
+    @Option(
+            names = {"-i", "--iteration-count"},
+            description = "Number of iterations")
+    private Long iterationCount;
+
+    @Option(names = "--seed", description = "Seed for the random generator")
+    private Double seed;
+
+    @Option(
+            names = {"-o", "--output-path"},
+            description = "Output PNG path")
+    private String outputPath;
+
+    @Option(
+            names = {"-t", "--threads"},
+            description = "Number of worker threads")
+    private Integer threads;
+
+    @Option(
+            names = {"-ap", "--affine-params"},
+            description = "Affine params in format a,b,c,d,e,f")
+    private String affine;
+
+    @Option(
+            names = {"-f", "--functions"},
+            description = "Comma-separated list of variation:weight")
+    private String functions;
+
+    @Option(
+            names = {"-b", "--burn-in"},
+            description = "Number of iterations to skip before plotting")
+    private Long burnIn;
+
+    @Option(names = {"-g", "--gamma"}, description = "Gamma value for correction")
+    private Double gamma;
+
+    @Option(names = {"-br", "--brightness"}, description = "Exposure multiplier")
+    private Double brightness;
+
+    @Option(
+            names = {"-gc", "--gamma-correction"},
+            description = "Enable gamma correction",
+            arity = "0..1",
+            fallbackValue = "true")
+    private Boolean gammaCorrection;
+
+    @Option(
+            names = {"-s", "--symmetry-level"},
+            description = "Rotational symmetry level (>=1)")
+    private Integer symmetryLevel;
 
     @Option(
             names = {"-c", "--config"},
             description = "Path to JSON config file")
-    private File configPath;
+    private Path configPath;
+
+    private final ConfigLoader configLoader =
+            new ConfigLoader(new ObjectMapper().findAndRegisterModules());
+    private final FractalRenderer renderer = new FractalRenderer();
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new Application()).execute(args);
@@ -43,21 +96,44 @@ public class Application implements Runnable {
 
     @Override
     public void run() {
-        var config = loadConfig();
-        LOGGER.atInfo().addKeyValue("config", config).log("Config content");
-
-        // ... logic
+        try {
+            FractalConfig config = buildConfig();
+            renderer.render(config);
+        } catch (Exception e) {
+            LOGGER.error("Application failed: {}", e.getMessage(), e);
+            throw e;
+        }
     }
 
-    private AppConfig loadConfig() {
-        // fill with cli options
-        if (configPath == null) return new AppConfig(fontSize, words);
+    private FractalConfig buildConfig() {
+        JsonFractalConfig jsonConfig = configLoader.load(configPath);
+        CliOverrides overrides = buildOverrides();
+        return new ConfigBuilder().apply(jsonConfig).apply(overrides).build();
+    }
 
-        // use config file if provided
+    private CliOverrides buildOverrides() {
+        CliOverrides overrides = new CliOverrides();
+        overrides.setWidth(width);
+        overrides.setHeight(height);
+        overrides.setIterations(iterationCount);
+        overrides.setSeed(seed);
+        overrides.setOutputPath(outputPath != null ? Path.of(outputPath) : null);
+        overrides.setThreads(threads);
+        overrides.setBurnIn(burnIn);
+        overrides.setGamma(gamma);
+        overrides.setBrightness(brightness);
+        overrides.setGammaCorrection(gammaCorrection);
+        overrides.setSymmetryLevel(symmetryLevel);
+        overrides.setAffineParams(ConfigBuilder.parseAffine(affine));
+        overrides.setVariations(parseFunctionsSafe());
+        return overrides;
+    }
+
+    private List<academy.variation.VariationDefinition> parseFunctionsSafe() {
         try {
-            return YAML_READER.readValue(configPath, AppConfig.class);
-        } catch (IOException e) {
-            throw new UncheckedIOException(e);
+            return ConfigBuilder.parseFunctions(functions);
+        } catch (IllegalArgumentException e) {
+            throw new CommandLine.ParameterException(new CommandLine(this), e.getMessage());
         }
     }
 }
