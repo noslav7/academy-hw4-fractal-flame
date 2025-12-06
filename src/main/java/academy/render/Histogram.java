@@ -41,7 +41,7 @@ final class Histogram {
         }
     }
 
-    BufferedImage toImage(double gamma, boolean gammaCorrection, double exposure) {
+    BufferedImage toImage(double gamma, boolean gammaCorrection, boolean logarithmicGamma, double exposure) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         var graphics = image.createGraphics();
         try {
@@ -51,12 +51,17 @@ final class Histogram {
             graphics.dispose();
         }
         double maxHit = Arrays.stream(hits).max().orElse(1.0);
+        double logMaxHit = Math.log1p(maxHit);
         for (int i = 0; i < hits.length; i++) {
             double count = hits[i];
             if (count == 0.0) {
                 continue;
             }
-            double normalized = Math.log(count) / Math.log(maxHit);
+            double normalized =
+                    logarithmicGamma
+                            ? (logMaxHit > 0.0 ? Math.log1p(count) / logMaxHit : 0.0)
+                            : count / maxHit;
+            normalized = clamp01(normalized);
             double adjusted = (gammaCorrection ? Math.pow(normalized, 1.0 / gamma) : normalized) * exposure;
             double r = (red[i] / count) * adjusted;
             double g = (green[i] / count) * adjusted;
@@ -66,6 +71,13 @@ final class Histogram {
             image.setRGB(x, height - y - 1, new RgbColor(r, g, b).toArgb(1.0));
         }
         return image;
+    }
+
+    private static double clamp01(double value) {
+        if (Double.isNaN(value)) return 0.0;
+        if (value < 0.0) return 0.0;
+        if (value > 1.0) return 1.0;
+        return value;
     }
 }
 

@@ -71,7 +71,8 @@ public final class FractalRenderer {
             }
         }
 
-        BufferedImage image = merged.toImage(config.gamma(), config.gammaCorrection(), config.brightness());
+        BufferedImage image = merged.toImage(
+                config.gamma(), config.gammaCorrection(), config.logGammaCorrection(), config.brightness());
         writeImage(config.outputPath(), image);
 
         Duration duration = Duration.between(start, Instant.now());

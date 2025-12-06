@@ -8,6 +8,8 @@ import academy.config.JsonFractalConfig;
 import academy.render.FractalRenderer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,18 +65,25 @@ public class Application implements Callable<Integer> {
             description = "Number of iterations to skip before plotting")
     private Long burnIn;
 
-    @Option(names = {"-g", "--gamma"}, description = "Gamma value for correction")
+    @Option(names = {"--gamma"}, description = "Gamma value for correction")
     private Double gamma;
 
     @Option(names = {"-br", "--brightness"}, description = "Exposure multiplier")
     private Double brightness;
 
     @Option(
-            names = {"-gc", "--gamma-correction"},
+            names = {"-g", "-gc", "--gamma-correction"},
             description = "Enable gamma correction",
             arity = "0..1",
             fallbackValue = "true")
     private Boolean gammaCorrection;
+
+    @Option(
+            names = {"-lgc", "--log-gamma-correction"},
+            description = "Use logarithmic gamma correction (per Draves paper)",
+            arity = "0..1",
+            fallbackValue = "true")
+    private Boolean logGammaCorrection;
 
     @Option(
             names = {"-s", "--symmetry-level"},
@@ -85,18 +94,21 @@ public class Application implements Callable<Integer> {
             names = {"-c", "--config"},
             description = "Path to JSON config file")
     private Path configPath;
+    @CommandLine.Unmatched
+    private List<String> unmatched = new ArrayList<>();
 
     private final ConfigLoader configLoader =
             new ConfigLoader(new ObjectMapper().findAndRegisterModules());
     private final FractalRenderer renderer = new FractalRenderer();
 
     public static void main(String[] args) {
-        new CommandLine(new Application()).execute(args);
+        new CommandLine(new Application()).setUnmatchedArgumentsAllowed(true).execute(args);
     }
 
     @Override
     public Integer call() {
         try {
+            applyUnmatchedSystemProperties();
             FractalConfig config = buildConfig();
             renderer.render(config);
             return ExitCode.OK;
@@ -115,6 +127,34 @@ public class Application implements Callable<Integer> {
         return new ConfigBuilder().apply(jsonConfig).apply(overrides).build();
     }
 
+    private void applyUnmatchedSystemProperties() {
+        if (unmatched == null || unmatched.isEmpty()) {
+            return;
+        }
+        for (String argument : unmatched) {
+            if (argument == null) continue;
+            if (argument.startsWith("-D") && argument.length() > 2) {
+                String assignment = argument.substring(2);
+                int idx = assignment.indexOf('=');
+                String key;
+                String value;
+                if (idx >= 0) {
+                    key = assignment.substring(0, idx);
+                    value = assignment.substring(idx + 1);
+                } else {
+                    key = assignment;
+                    value = "true";
+                }
+                if (!key.isBlank()) {
+                    System.setProperty(key, value);
+                    LOGGER.debug("Applied system property: {}={}", key, value);
+                }
+            } else {
+                LOGGER.warn("Ignoring unsupported argument: {}", argument);
+            }
+        }
+    }
+
     private CliOverrides buildOverrides() {
         CliOverrides overrides = new CliOverrides();
         overrides.setWidth(width);
@@ -128,6 +168,7 @@ public class Application implements Callable<Integer> {
         overrides.setGamma(gamma);
         overrides.setBrightness(brightness);
         overrides.setGammaCorrection(gammaCorrection);
+        overrides.setLogGammaCorrection(logGammaCorrection);
         overrides.setSymmetryLevel(symmetryLevel);
         String normalizedAffine = normalizeOption(affine, "--affine-params", 5);
         overrides.setAffineParams(

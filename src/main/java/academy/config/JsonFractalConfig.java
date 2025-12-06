@@ -31,6 +31,9 @@ public class JsonFractalConfig {
     @JsonProperty("gamma_correction")
     public Boolean gammaCorrection;
 
+    @JsonProperty("log_gamma_correction")
+    public Boolean logGammaCorrection;
+
     @JsonProperty("symmetry_level")
     public Integer symmetryLevel;
 

@@ -28,6 +28,7 @@ public record FractalConfig(
         double brightness,
         double gamma,
         boolean gammaCorrection,
+        boolean logGammaCorrection,
         int symmetryLevel) {
 
     public FractalConfig {
@@ -65,6 +66,7 @@ public record FractalConfig(
                 .brightness(brightness)
                 .gamma(gamma)
                 .gammaCorrection(gammaCorrection)
+                .logGammaCorrection(logGammaCorrection)
                 .symmetryLevel(symmetryLevel);
     }
 
@@ -87,6 +89,7 @@ public record FractalConfig(
         private Double brightness;
         private Double gamma;
         private Boolean gammaCorrection;
+        private Boolean logGammaCorrection;
         private Integer symmetryLevel;
 
         private static final int DEFAULT_WIDTH = 1920;
@@ -101,6 +104,7 @@ public record FractalConfig(
         private static final double DEFAULT_BRIGHTNESS = 1.0;
         private static final double DEFAULT_GAMMA = 2.2;
         private static final boolean DEFAULT_GAMMA_CORRECTION = false;
+        private static final boolean DEFAULT_LOG_GAMMA_CORRECTION = true;
         private static final int DEFAULT_SYMMETRY = 1;
 
         public Builder width(Integer value) {
@@ -177,6 +181,11 @@ public record FractalConfig(
             return this;
         }
 
+        public Builder logGammaCorrection(Boolean value) {
+            this.logGammaCorrection = value;
+            return this;
+        }
+
         public Builder symmetryLevel(Integer value) {
             this.symmetryLevel = value;
             return this;
@@ -199,6 +208,8 @@ public record FractalConfig(
             double finalGamma = gamma != null ? gamma : DEFAULT_GAMMA;
             boolean finalGammaCorrection =
                     gammaCorrection != null ? gammaCorrection : DEFAULT_GAMMA_CORRECTION;
+            boolean finalLogGammaCorrection =
+                    logGammaCorrection != null ? logGammaCorrection : DEFAULT_LOG_GAMMA_CORRECTION;
             int finalSymmetry = symmetryLevel != null ? symmetryLevel : DEFAULT_SYMMETRY;
             return new FractalConfig(
                     finalWidth,
@@ -215,6 +226,7 @@ public record FractalConfig(
                     finalBrightness,
                     finalGamma,
                     finalGammaCorrection,
+                    finalLogGammaCorrection,
                     finalSymmetry);
         }
     }

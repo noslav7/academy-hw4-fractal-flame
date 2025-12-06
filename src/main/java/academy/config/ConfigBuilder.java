@@ -38,6 +38,7 @@ public final class ConfigBuilder {
         delegate.brightness(jsonConfig.brightness);
         delegate.gamma(jsonConfig.gamma);
         delegate.gammaCorrection(jsonConfig.gammaCorrection);
+        delegate.logGammaCorrection(jsonConfig.logGammaCorrection);
         delegate.symmetryLevel(jsonConfig.symmetryLevel);
         return this;
     }
@@ -56,8 +57,11 @@ public final class ConfigBuilder {
         if (overrides.palette() != null) delegate.palette(overrides.palette());
         if (overrides.camera() != null) delegate.camera(overrides.camera());
         if (overrides.brightness() != null) delegate.brightness(overrides.brightness());
-      if (overrides.gamma() != null) delegate.gamma(overrides.gamma());
-      if (overrides.gammaCorrection() != null) delegate.gammaCorrection(overrides.gammaCorrection());
+        if (overrides.gamma() != null) delegate.gamma(overrides.gamma());
+        if (overrides.gammaCorrection() != null) delegate.gammaCorrection(overrides.gammaCorrection());
+        if (overrides.logGammaCorrection() != null) {
+            delegate.logGammaCorrection(overrides.logGammaCorrection());
+        }
         if (overrides.symmetryLevel() != null) delegate.symmetryLevel(overrides.symmetryLevel());
         return this;
     }
@@ -173,6 +177,7 @@ public final class ConfigBuilder {
         private Double brightness;
         private Double gamma;
         private Boolean gammaCorrection;
+        private Boolean logGammaCorrection;
         private Integer symmetryLevel;
 
         public Integer width() {
@@ -285,6 +290,14 @@ public final class ConfigBuilder {
 
         public void setGammaCorrection(Boolean gammaCorrection) {
             this.gammaCorrection = gammaCorrection;
+        }
+
+        public Boolean logGammaCorrection() {
+            return logGammaCorrection;
+        }
+
+        public void setLogGammaCorrection(Boolean logGammaCorrection) {
+            this.logGammaCorrection = logGammaCorrection;
         }
 
         public Integer symmetryLevel() {
