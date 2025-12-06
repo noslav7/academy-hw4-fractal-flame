@@ -18,11 +18,6 @@ public final class ConfigBuilder {
 
     private final FractalConfig.Builder delegate = FractalConfig.builder();
 
-    public ConfigBuilder applyDefaults() {
-        delegate.width(null);
-        return this;
-    }
-
     public ConfigBuilder apply(JsonFractalConfig jsonConfig) {
         if (jsonConfig == null) {
             return this;

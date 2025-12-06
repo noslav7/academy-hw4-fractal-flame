@@ -6,6 +6,8 @@ import academy.color.RgbColor;
 import academy.config.FractalConfig;
 import academy.math.MutablePoint;
 import academy.math.Point;
+import academy.variation.VariationDefinition;
+import academy.variation.VariationSelector;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -119,15 +121,11 @@ public final class FractalRenderer {
             long processed = 0;
             long plotted = 0;
             for (long iteration = 0; iteration < iterations; iteration++) {
-                VariationSelection selection = selector.pick(random.nextDouble());
+                VariationDefinition variation = selector.pick(random.nextDouble());
                 Point afterGlobal = config.affineParams().apply(currentPoint, globalAffinePoint).toImmutable();
-                Point afterLocal =
-                        selection.definition().localAffine().apply(afterGlobal, localAffinePoint).toImmutable();
-                currentPoint =
-                        selection.definition()
-                                .type()
-                                .apply(afterLocal, selection.definition(), random);
-                colorIndex = (colorIndex + selection.definition().colorIndex()) * 0.5;
+                Point afterLocal = variation.localAffine().apply(afterGlobal, localAffinePoint).toImmutable();
+                currentPoint = variation.type().apply(afterLocal, variation, random);
+                colorIndex = (colorIndex + variation.colorIndex()) * 0.5;
                 RgbColor paletteColor = config.palette().sample(colorIndex);
 
                 if (iteration > burnIn) {

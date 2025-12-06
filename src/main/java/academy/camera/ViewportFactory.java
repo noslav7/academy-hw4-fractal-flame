@@ -4,6 +4,7 @@ import academy.config.FractalConfig;
 import academy.math.MutablePoint;
 import academy.math.Point;
 import academy.variation.VariationDefinition;
+import academy.variation.VariationSelector;
 import java.util.SplittableRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,12 +67,9 @@ public final class ViewportFactory {
         long burnIn = Math.min(config.burnInIterations(), samples / 2);
         long skipped = 0;
         for (long i = 0; i < samples; i++) {
-            VariationSelection selection = selector.pick(random.nextDouble());
+            VariationDefinition variation = selector.pick(random.nextDouble());
             Point affinePoint = config.affineParams().apply(current, working).toImmutable();
-            current =
-                    selection.definition()
-                            .type()
-                            .apply(affinePoint, selection.definition(), random);
+            current = variation.type().apply(affinePoint, variation, random);
             if (i > burnIn && isWithinBounds(current)) {
                 box.include(current);
             } else {
@@ -104,24 +102,5 @@ public final class ViewportFactory {
         return value;
     }
 
-    private record VariationSelector(java.util.List<VariationDefinition> variations, double totalWeight) {
-        VariationSelector(java.util.List<VariationDefinition> definitions) {
-            this(definitions, definitions.stream().mapToDouble(VariationDefinition::weight).sum());
-        }
-
-        VariationSelection pick(double random) {
-            double scaled = random * totalWeight;
-            double cumulative = 0.0;
-            for (VariationDefinition definition : variations) {
-                cumulative += definition.weight();
-                if (scaled <= cumulative) {
-                    return new VariationSelection(definition);
-                }
-            }
-            return new VariationSelection(variations.get(variations.size() - 1));
-        }
-    }
-
-    private record VariationSelection(VariationDefinition definition) {}
 }
 

@@ -8,15 +8,16 @@ import academy.config.JsonFractalConfig;
 import academy.render.FractalRenderer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Path;
-import java.util.List;
+import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
 
 @Command(name = "fractal-flame", mixinStandardHelpOptions = true, version = "1.0")
-public class Application implements Runnable {
+public class Application implements Callable<Integer> {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
 
     @Option(
@@ -90,18 +91,21 @@ public class Application implements Runnable {
     private final FractalRenderer renderer = new FractalRenderer();
 
     public static void main(String[] args) {
-        int exitCode = new CommandLine(new Application()).execute(args);
-        System.exit(exitCode);
+        new CommandLine(new Application()).execute(args);
     }
 
     @Override
-    public void run() {
+    public Integer call() {
         try {
             FractalConfig config = buildConfig();
             renderer.render(config);
+            return ExitCode.OK;
+        } catch (IllegalArgumentException e) {
+            LOGGER.error("Invalid configuration: {}", e.getMessage());
+            return ExitCode.USAGE;
         } catch (Exception e) {
             LOGGER.error("Application failed: {}", e.getMessage(), e);
-            throw e;
+            return ExitCode.SOFTWARE;
         }
     }
 
@@ -117,23 +121,40 @@ public class Application implements Runnable {
         overrides.setHeight(height);
         overrides.setIterations(iterationCount);
         overrides.setSeed(seed);
-        overrides.setOutputPath(outputPath != null ? Path.of(outputPath) : null);
+        String normalizedOutput = normalizeOption(outputPath, "--output-path", 1);
+        overrides.setOutputPath(normalizedOutput != null ? Path.of(normalizedOutput) : null);
         overrides.setThreads(threads);
         overrides.setBurnIn(burnIn);
         overrides.setGamma(gamma);
         overrides.setBrightness(brightness);
         overrides.setGammaCorrection(gammaCorrection);
         overrides.setSymmetryLevel(symmetryLevel);
-        overrides.setAffineParams(ConfigBuilder.parseAffine(affine));
-        overrides.setVariations(parseFunctionsSafe());
+        String normalizedAffine = normalizeOption(affine, "--affine-params", 5);
+        overrides.setAffineParams(
+                normalizedAffine != null ? ConfigBuilder.parseAffine(normalizedAffine) : null);
+        String normalizedFunctions = normalizeOption(functions, "--functions", 3);
+        overrides.setVariations(
+                normalizedFunctions != null ? ConfigBuilder.parseFunctions(normalizedFunctions) : null);
         return overrides;
     }
 
-    private List<academy.variation.VariationDefinition> parseFunctionsSafe() {
-        try {
-            return ConfigBuilder.parseFunctions(functions);
-        } catch (IllegalArgumentException e) {
-            throw new CommandLine.ParameterException(new CommandLine(this), e.getMessage());
+    /**
+     * Normalizes CLI string options by trimming and validating their length.
+     *
+     * @param value raw option value
+     * @param optionName human-readable option identifier used in error messages
+     * @param minLength minimum allowed length for the trimmed value
+     * @return trimmed value or {@code null} when the option was not provided
+     */
+    private String normalizeOption(String value, String optionName, int minLength) {
+        if (value == null) {
+            return null;
         }
+        String trimmed = value.trim();
+        if (trimmed.length() < minLength) {
+            throw new IllegalArgumentException(
+                    optionName + " must contain at least " + minLength + " characters");
+        }
+        return trimmed;
     }
 }
