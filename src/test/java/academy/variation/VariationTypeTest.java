@@ -1,29 +1,38 @@
 package academy.variation;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import academy.color.RgbColor;
 import academy.config.AffineParams;
 import academy.math.Point;
-import academy.color.RgbColor;
 import java.util.SplittableRandom;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 class VariationTypeTest {
 
+    private static final double EPSILON = 1.0e-12;
+    private static final SplittableRandom UNUSED_RANDOM = new SplittableRandom(0);
+
     @Test
-    void swirlShouldRotatePoint() {
-        Point result =
-                VariationType.SWIRL.apply(new Point(1.0, 0.0), definition(VariationType.SWIRL), new SplittableRandom(1));
-        Assertions.assertThat(result.x()).isNotEqualTo(1.0);
-        Assertions.assertThat(result.y()).isNotZero();
+    void givenUnitPointWhenSwirlAppliedThenCoordinatesRotate() {
+        Point point = new Point(1.0, 0.0);
+
+        Point result = VariationType.SWIRL.apply(point, definition(VariationType.SWIRL), UNUSED_RANDOM);
+
+        assertAll(
+                () -> assertEquals(Math.sin(1.0), result.x(), EPSILON),
+                () -> assertEquals(Math.cos(1.0), result.y(), EPSILON));
     }
 
     @Test
-    void sphericalShouldInvertDistance() {
+    void givenPointWhenSphericalAppliedThenDistanceInverts() {
         Point point = new Point(2.0, 0.0);
-        Point result =
-                VariationType.SPHERICAL.apply(point, definition(VariationType.SPHERICAL), new SplittableRandom(2));
-        Assertions.assertThat(result.x()).isEqualTo(0.5);
-        Assertions.assertThat(result.y()).isZero();
+
+        Point result = VariationType.SPHERICAL.apply(point, definition(VariationType.SPHERICAL), UNUSED_RANDOM);
+
+        assertAll(
+                () -> assertEquals(0.5, result.x(), EPSILON), () -> assertEquals(0.0, result.y(), EPSILON));
     }
 
     private VariationDefinition definition(VariationType type) {
