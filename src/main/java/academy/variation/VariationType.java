@@ -103,6 +103,59 @@ public enum VariationType {
             double angle = (theta + 2.0 * Math.PI * k) / powerParam;
             return new Point(magnitude * Math.cos(angle), magnitude * Math.sin(angle));
         }
+    },
+    DISC {
+        @Override
+        public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
+            double radius = hypot(point);
+            double theta = Math.atan2(point.y(), point.x());
+            double factor = theta / Math.PI;
+            double piRadius = Math.PI * radius;
+            double x = factor * Math.sin(piRadius);
+            double y = factor * Math.cos(piRadius);
+            return new Point(x, y);
+        }
+    },
+    SPIRAL {
+        @Override
+        public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
+            double radius = hypot(point);
+            if (radius == 0.0) return ORIGIN;
+            double theta = Math.atan2(point.y(), point.x());
+            double x = (Math.cos(theta) + Math.sin(radius)) / radius;
+            double y = (Math.sin(theta) - Math.cos(radius)) / radius;
+            return new Point(x, y);
+        }
+    },
+    HEART {
+        @Override
+        public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
+            double radius = hypot(point);
+            double theta = Math.atan2(point.y(), point.x());
+            double angle = theta * radius;
+            double x = radius * Math.sin(angle);
+            double y = -radius * Math.cos(angle);
+            return new Point(x, y);
+        }
+    },
+    HYPERBOLIC {
+        @Override
+        public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
+            double radius = hypot(point);
+            if (radius == 0.0) return ORIGIN;
+            double theta = Math.atan2(point.y(), point.x());
+            double x = Math.sin(theta) / radius;
+            double y = radius * Math.cos(theta);
+            return new Point(x, y);
+        }
+    },
+    FISHEYE {
+        @Override
+        public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
+            double radius = hypot(point);
+            double factor = 2.0 / (radius + 1.0);
+            return new Point(point.y() * factor, point.x() * factor);
+        }
     };
 
     public abstract Point apply(
