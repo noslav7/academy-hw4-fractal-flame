@@ -70,7 +70,7 @@ public final class ViewportFactory {
             VariationDefinition variation = selector.pick(random.nextDouble());
             Point affinePoint = config.affineParams().apply(current, working).toImmutable();
             current = variation.type().apply(affinePoint, variation, random);
-            if (i > burnIn && isWithinBounds(current)) {
+            if (i >= burnIn && isWithinBounds(current)) {
                 box.include(current);
             } else {
                 skipped++;

@@ -128,7 +128,7 @@ public final class FractalRenderer {
                 colorIndex = (colorIndex + variation.colorIndex()) * 0.5;
                 RgbColor paletteColor = config.palette().sample(colorIndex);
 
-                if (iteration > burnIn) {
+                if (iteration >= burnIn) {
                     plotWithSymmetry(histogram, currentPoint, paletteColor);
                     plotted++;
                 }
