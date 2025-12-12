@@ -48,14 +48,12 @@ public final class FractalRenderer {
         for (int i = 0; i < config.threads(); i++) {
             long iterations = iterationsPerThread + (i < remainder ? 1 : 0);
             int workerIndex = i;
-            futures.add(
-                    executor.submit(
-                            new Worker(
-                                    config,
-                                    iterations,
-                                    tracker,
-                                    viewport,
-                                    Double.doubleToLongBits(config.seed()) + workerIndex * 997)));
+            futures.add(executor.submit(new Worker(
+                    config,
+                    iterations,
+                    tracker,
+                    viewport,
+                    Double.doubleToLongBits(config.seed()) + workerIndex * 997)));
         }
         executor.shutdown();
 
@@ -101,8 +99,7 @@ public final class FractalRenderer {
         private final SplittableRandom random;
         private final Viewport viewport;
 
-        private Worker(
-                FractalConfig config, long iterations, ProgressTracker tracker, Viewport viewport, long seed) {
+        private Worker(FractalConfig config, long iterations, ProgressTracker tracker, Viewport viewport, long seed) {
             this.config = config;
             this.iterations = iterations;
             this.tracker = tracker;
@@ -123,8 +120,13 @@ public final class FractalRenderer {
             long plotted = 0;
             for (long iteration = 0; iteration < iterations; iteration++) {
                 VariationDefinition variation = selector.pick(random.nextDouble());
-                Point afterGlobal = config.affineParams().apply(currentPoint, globalAffinePoint).toImmutable();
-                Point afterLocal = variation.localAffine().apply(afterGlobal, localAffinePoint).toImmutable();
+                Point afterGlobal = config.affineParams()
+                        .apply(currentPoint, globalAffinePoint)
+                        .toImmutable();
+                Point afterLocal = variation
+                        .localAffine()
+                        .apply(afterGlobal, localAffinePoint)
+                        .toImmutable();
                 currentPoint = variation.type().apply(afterLocal, variation, random);
                 colorIndex = (colorIndex + variation.colorIndex()) * 0.5;
                 RgbColor paletteColor = config.palette().sample(colorIndex);
@@ -169,4 +171,3 @@ public final class FractalRenderer {
         }
     }
 }
-

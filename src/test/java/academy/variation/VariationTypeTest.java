@@ -41,8 +41,7 @@ class VariationTypeTest {
 
     @Test
     void givenUnitPointWhenSpiralAppliedThenUnwrapsAroundOrigin() {
-        Point result =
-                VariationType.SPIRAL.apply(new Point(1.0, 0.0), definition(VariationType.SPIRAL), UNUSED_RANDOM);
+        Point result = VariationType.SPIRAL.apply(new Point(1.0, 0.0), definition(VariationType.SPIRAL), UNUSED_RANDOM);
 
         assertPointEquals(1.8414709848078965, -0.5403023058681398, result);
     }
@@ -56,8 +55,8 @@ class VariationTypeTest {
 
     @Test
     void givenDiagonalPointWhenHyperbolicAppliedThenMatchesFormula() {
-        Point result =
-                VariationType.HYPERBOLIC.apply(new Point(1.0, 1.0), definition(VariationType.HYPERBOLIC), UNUSED_RANDOM);
+        Point result = VariationType.HYPERBOLIC.apply(
+                new Point(1.0, 1.0), definition(VariationType.HYPERBOLIC), UNUSED_RANDOM);
 
         assertPointEquals(0.5, 1.0, result);
     }
@@ -76,8 +75,6 @@ class VariationTypeTest {
 
     private void assertPointEquals(double expectedX, double expectedY, Point result) {
         assertAll(
-                () -> assertEquals(expectedX, result.x(), EPSILON),
-                () -> assertEquals(expectedY, result.y(), EPSILON));
+                () -> assertEquals(expectedX, result.x(), EPSILON), () -> assertEquals(expectedY, result.y(), EPSILON));
     }
 }
-

@@ -42,4 +42,3 @@ class ConfigBuilderTest {
                 () -> assertEquals(0.1, params.f(), EPSILON));
     }
 }
-

@@ -45,4 +45,3 @@ class HistogramTest {
         return (image.getRGB(x, y) >> 16) & 0xFF;
     }
 }
-

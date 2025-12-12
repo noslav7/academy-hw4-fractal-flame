@@ -9,10 +9,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Effective configuration used by the renderer after merging defaults, JSON config and CLI
- * overrides.
- */
+/** Effective configuration used by the renderer after merging defaults, JSON config and CLI overrides. */
 public record FractalConfig(
         int width,
         int height,
@@ -206,8 +203,7 @@ public record FractalConfig(
             CameraSettings finalCamera = camera != null ? camera : DEFAULT_CAMERA;
             double finalBrightness = brightness != null ? brightness : DEFAULT_BRIGHTNESS;
             double finalGamma = gamma != null ? gamma : DEFAULT_GAMMA;
-            boolean finalGammaCorrection =
-                    gammaCorrection != null ? gammaCorrection : DEFAULT_GAMMA_CORRECTION;
+            boolean finalGammaCorrection = gammaCorrection != null ? gammaCorrection : DEFAULT_GAMMA_CORRECTION;
             boolean finalLogGammaCorrection =
                     logGammaCorrection != null ? logGammaCorrection : DEFAULT_LOG_GAMMA_CORRECTION;
             int finalSymmetry = symmetryLevel != null ? symmetryLevel : DEFAULT_SYMMETRY;
@@ -237,4 +233,3 @@ public record FractalConfig(
         }
     }
 }
-

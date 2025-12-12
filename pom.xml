@@ -614,6 +614,9 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>academy.Application</mainClass>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
@@ -621,9 +624,6 @@
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <mainClass>academy.Application</mainClass>
-                </configuration>
             </plugin>
         </plugins>
     </build>

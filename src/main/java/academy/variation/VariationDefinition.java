@@ -4,9 +4,7 @@ import academy.color.RgbColor;
 import academy.config.AffineParams;
 import java.util.Objects;
 
-/**
- * Couples a variation type with weight, color and a local affine transform.
- */
+/** Couples a variation type with weight, color and a local affine transform. */
 public record VariationDefinition(
         VariationType type,
         double weight,
@@ -29,12 +27,7 @@ public record VariationDefinition(
     }
 
     public VariationDefinition(
-            VariationType type,
-            double weight,
-            RgbColor color,
-            double colorIndex,
-            AffineParams localAffine) {
+            VariationType type, double weight, RgbColor color, double colorIndex, AffineParams localAffine) {
         this(type, weight, color, colorIndex, localAffine, VariationParameters.empty());
     }
 }
-

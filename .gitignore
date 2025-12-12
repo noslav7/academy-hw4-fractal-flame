@@ -26,3 +26,6 @@ dependency-reduced-pom.xml
 *.log
 hs_err_pid*
 performance_results.csv
+
+### Test artifacts ###
+test_output*.png

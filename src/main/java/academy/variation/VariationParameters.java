@@ -4,8 +4,7 @@ import java.util.Collections;
 import java.util.Map;
 
 public final class VariationParameters {
-    private static final VariationParameters EMPTY =
-            new VariationParameters(Collections.emptyMap());
+    private static final VariationParameters EMPTY = new VariationParameters(Collections.emptyMap());
 
     private final Map<String, Double> values;
 
@@ -46,4 +45,3 @@ public final class VariationParameters {
         return "VariationParameters" + values;
     }
 }
-

@@ -24,20 +24,19 @@ class FractalRendererTest {
     @Test
     void givenValidConfigWhenRenderThenPngIsWritten(@TempDir Path tempDir) throws Exception {
         Path output = tempDir.resolve("flame.png");
-        FractalConfig config =
-                FractalConfig.builder()
-                        .width(64)
-                        .height(64)
-                        .iterationCount(5_000L)
-                        .threads(2)
-                        .seed(42.0)
-                        .outputPath(output)
-                        .affineParams(new AffineParams(0.8, 0.0, 0.0, 0.0, 0.8, 0.0))
-                        .burnInIterations(500L)
-                        .gamma(2.2)
-                        .gammaCorrection(true)
-                        .symmetryLevel(1)
-                        .build();
+        FractalConfig config = FractalConfig.builder()
+                .width(64)
+                .height(64)
+                .iterationCount(5_000L)
+                .threads(2)
+                .seed(42.0)
+                .outputPath(output)
+                .affineParams(new AffineParams(0.8, 0.0, 0.0, 0.0, 0.8, 0.0))
+                .burnInIterations(500L)
+                .gamma(2.2)
+                .gammaCorrection(true)
+                .symmetryLevel(1)
+                .build();
 
         new FractalRenderer().render(config);
 
@@ -49,32 +48,26 @@ class FractalRendererTest {
     @Test
     void givenSymmetryLevelWhenRenderThenRotatesPointCopies(@TempDir Path tempDir) throws Exception {
         Path output = tempDir.resolve("symmetry.png");
-        VariationDefinition variation =
-                new VariationDefinition(
-                        VariationType.LINEAR,
-                        1.0,
-                        RgbColor.of(1.0, 0.0, 0.0),
-                        0.0,
-                        AffineParams.IDENTITY);
+        VariationDefinition variation = new VariationDefinition(
+                VariationType.LINEAR, 1.0, RgbColor.of(1.0, 0.0, 0.0), 0.0, AffineParams.IDENTITY);
 
-        FractalConfig config =
-                FractalConfig.builder()
-                        .width(32)
-                        .height(32)
-                        .iterationCount(10L)
-                        .threads(1)
-                        .seed(1.0)
-                        .outputPath(output)
-                        // Force all iterations to land at (0.5, 0) for deterministic symmetry
-                        .affineParams(new AffineParams(0.0, 0.0, 0.5, 0.0, 0.0, 0.0))
-                        .variations(List.of(variation))
-                        .burnInIterations(0L)
-                        .palette(new Palette(List.of(RgbColor.of(1.0, 0.0, 0.0))))
-                        .gammaCorrection(false)
-                        .logGammaCorrection(false)
-                        .symmetryLevel(4)
-                        .camera(new CameraSettings(0.0, 0.0, 1.0, 0.0, false, 0.1, 200_000L))
-                        .build();
+        FractalConfig config = FractalConfig.builder()
+                .width(32)
+                .height(32)
+                .iterationCount(10L)
+                .threads(1)
+                .seed(1.0)
+                .outputPath(output)
+                // Force all iterations to land at (0.5, 0) for deterministic symmetry
+                .affineParams(new AffineParams(0.0, 0.0, 0.5, 0.0, 0.0, 0.0))
+                .variations(List.of(variation))
+                .burnInIterations(0L)
+                .palette(new Palette(List.of(RgbColor.of(1.0, 0.0, 0.0))))
+                .gammaCorrection(false)
+                .logGammaCorrection(false)
+                .symmetryLevel(4)
+                .camera(new CameraSettings(0.0, 0.0, 1.0, 0.0, false, 0.1, 200_000L))
+                .build();
 
         new FractalRenderer().render(config);
 
@@ -92,4 +85,3 @@ class FractalRendererTest {
         assertEquals(4, nonBlackPixels, "Symmetry should replicate a point four times");
     }
 }
-

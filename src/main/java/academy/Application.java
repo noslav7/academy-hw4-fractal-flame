@@ -28,7 +28,7 @@ public class Application implements Callable<Integer> {
     private Integer width;
 
     @Option(
-            names = {"-h", "--height"},
+            names = {"-H", "--height"},
             description = "Image height in pixels")
     private Integer height;
 
@@ -65,10 +65,14 @@ public class Application implements Callable<Integer> {
             description = "Number of iterations to skip before plotting")
     private Long burnIn;
 
-    @Option(names = {"--gamma"}, description = "Gamma value for correction")
+    @Option(
+            names = {"--gamma"},
+            description = "Gamma value for correction")
     private Double gamma;
 
-    @Option(names = {"-br", "--brightness"}, description = "Exposure multiplier")
+    @Option(
+            names = {"-br", "--brightness"},
+            description = "Exposure multiplier")
     private Double brightness;
 
     @Option(
@@ -94,15 +98,18 @@ public class Application implements Callable<Integer> {
             names = {"-c", "--config"},
             description = "Path to JSON config file")
     private Path configPath;
+
     @CommandLine.Unmatched
     private List<String> unmatched = new ArrayList<>();
 
-    private final ConfigLoader configLoader =
-            new ConfigLoader(new ObjectMapper().findAndRegisterModules());
+    private final ConfigLoader configLoader = new ConfigLoader(new ObjectMapper().findAndRegisterModules());
     private final FractalRenderer renderer = new FractalRenderer();
 
     public static void main(String[] args) {
-        new CommandLine(new Application()).setUnmatchedArgumentsAllowed(true).execute(args);
+        int exitCode = new CommandLine(new Application())
+                .setUnmatchedArgumentsAllowed(true)
+                .execute(args);
+        System.exit(exitCode);
     }
 
     @Override
@@ -171,11 +178,9 @@ public class Application implements Callable<Integer> {
         overrides.setLogGammaCorrection(logGammaCorrection);
         overrides.setSymmetryLevel(symmetryLevel);
         String normalizedAffine = normalizeOption(affine, "--affine-params", 5);
-        overrides.setAffineParams(
-                normalizedAffine != null ? ConfigBuilder.parseAffine(normalizedAffine) : null);
+        overrides.setAffineParams(normalizedAffine != null ? ConfigBuilder.parseAffine(normalizedAffine) : null);
         String normalizedFunctions = normalizeOption(functions, "--functions", 3);
-        overrides.setVariations(
-                normalizedFunctions != null ? ConfigBuilder.parseFunctions(normalizedFunctions) : null);
+        overrides.setVariations(normalizedFunctions != null ? ConfigBuilder.parseFunctions(normalizedFunctions) : null);
         return overrides;
     }
 
@@ -193,8 +198,7 @@ public class Application implements Callable<Integer> {
         }
         String trimmed = value.trim();
         if (trimmed.length() < minLength) {
-            throw new IllegalArgumentException(
-                    optionName + " must contain at least " + minLength + " characters");
+            throw new IllegalArgumentException(optionName + " must contain at least " + minLength + " characters");
         }
         return trimmed;
     }

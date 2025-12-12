@@ -1,9 +1,6 @@
 package academy.math;
 
-/**
- * Simple mutable point used to avoid excessive allocations when applying affine transforms
- * in tight loops.
- */
+/** Simple mutable point used to avoid excessive allocations when applying affine transforms in tight loops. */
 public final class MutablePoint {
     private double x;
     private double y;
@@ -33,4 +30,3 @@ public final class MutablePoint {
         return new Point(x, y);
     }
 }
-

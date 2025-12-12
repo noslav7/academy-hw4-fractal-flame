@@ -50,10 +50,13 @@ public class JsonFractalConfig {
         public String name;
         public Double weight;
         public JsonColor color;
+
         @JsonProperty("color_index")
         public Double colorIndex;
+
         @JsonProperty("affine")
         public JsonAffineParams affine;
+
         public java.util.Map<String, Double> params;
     }
 
@@ -98,4 +101,3 @@ public class JsonFractalConfig {
         return output_path != null ? Path.of(output_path) : null;
     }
 }
-

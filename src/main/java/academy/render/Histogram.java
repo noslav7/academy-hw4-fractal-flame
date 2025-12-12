@@ -58,9 +58,7 @@ final class Histogram {
                 continue;
             }
             double normalized =
-                    logarithmicGamma
-                            ? (logMaxHit > 0.0 ? Math.log1p(count) / logMaxHit : 0.0)
-                            : count / maxHit;
+                    logarithmicGamma ? (logMaxHit > 0.0 ? Math.log1p(count) / logMaxHit : 0.0) : count / maxHit;
             normalized = clamp01(normalized);
             double adjusted = (gammaCorrection ? Math.pow(normalized, 1.0 / gamma) : normalized) * exposure;
             double r = (red[i] / count) * adjusted;
@@ -68,7 +66,7 @@ final class Histogram {
             double b = (blue[i] / count) * adjusted;
             int x = i % width;
             int y = i / width;
-            image.setRGB(x, height - y - 1, new RgbColor(r, g, b).toArgb(1.0));
+            image.setRGB(x, y, new RgbColor(r, g, b).toArgb(1.0));
         }
         return image;
     }
@@ -80,4 +78,3 @@ final class Histogram {
         return value;
     }
 }
-

@@ -4,8 +4,7 @@ import academy.math.Point;
 import java.util.SplittableRandom;
 
 /**
- * Subset of flame variations described by Draves. Each variation transforms a cartesian point
- * into a new coordinate.
+ * Subset of flame variations described by Draves. Each variation transforms a cartesian point into a new coordinate.
  */
 public enum VariationType {
     LINEAR {
@@ -158,8 +157,7 @@ public enum VariationType {
         }
     };
 
-    public abstract Point apply(
-            Point point, VariationDefinition definition, SplittableRandom random);
+    public abstract Point apply(Point point, VariationDefinition definition, SplittableRandom random);
 
     public static VariationType fromName(String value) {
         for (VariationType type : values()) {
@@ -180,4 +178,3 @@ public enum VariationType {
 
     private static final Point ORIGIN = new Point(0.0, 0.0);
 }
-

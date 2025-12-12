@@ -27,7 +27,13 @@ public final class ViewportFactory {
             LOGGER.warn("Auto-fit failed, falling back to default framing");
         }
         double baseScale = camera.scale() * (config.width() / 3.0);
-        return new Viewport(config.width(), config.height(), camera.centerX(), camera.centerY(), baseScale, camera.rotationDegrees());
+        return new Viewport(
+                config.width(),
+                config.height(),
+                camera.centerX(),
+                camera.centerY(),
+                baseScale,
+                camera.rotationDegrees());
     }
 
     private static Viewport tryAutoFit(FractalConfig config, CameraSettings camera) {
@@ -61,15 +67,19 @@ public final class ViewportFactory {
     private static BoundingBox sampleBoundingBox(FractalConfig config, long samples) {
         SplittableRandom random = new SplittableRandom(Double.doubleToLongBits(config.seed()));
         VariationSelector selector = new VariationSelector(config.variations());
-        MutablePoint working = new MutablePoint(0.0, 0.0);
+        MutablePoint globalAffinePoint = new MutablePoint(0.0, 0.0);
+        MutablePoint localAffinePoint = new MutablePoint(0.0, 0.0);
         Point current = new Point(random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0));
         BoundingBox box = new BoundingBox();
         long burnIn = Math.min(config.burnInIterations(), samples / 2);
         long skipped = 0;
         for (long i = 0; i < samples; i++) {
             VariationDefinition variation = selector.pick(random.nextDouble());
-            Point affinePoint = config.affineParams().apply(current, working).toImmutable();
-            current = variation.type().apply(affinePoint, variation, random);
+            Point afterGlobal =
+                    config.affineParams().apply(current, globalAffinePoint).toImmutable();
+            Point afterLocal =
+                    variation.localAffine().apply(afterGlobal, localAffinePoint).toImmutable();
+            current = variation.type().apply(afterLocal, variation, random);
             if (i >= burnIn && isWithinBounds(current)) {
                 box.include(current);
             } else {
@@ -101,6 +111,4 @@ public final class ViewportFactory {
         if (value < -maxAbs) return -maxAbs;
         return value;
     }
-
 }
-

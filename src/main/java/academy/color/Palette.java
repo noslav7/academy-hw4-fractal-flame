@@ -45,4 +45,3 @@ public final class Palette {
         return v;
     }
 }
-

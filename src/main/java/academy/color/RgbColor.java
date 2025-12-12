@@ -4,8 +4,7 @@ import java.util.Objects;
 import java.util.SplittableRandom;
 
 /**
- * Simple RGB color stored as doubles in the range [0, 1]. Provides helpers for mixing and
- * clamping to 8-bit channels.
+ * Simple RGB color stored as doubles in the range [0, 1]. Provides helpers for mixing and clamping to 8-bit channels.
  */
 public record RgbColor(double r, double g, double b) {
 
@@ -31,9 +30,7 @@ public record RgbColor(double r, double g, double b) {
         double ratio = clamp(blend);
         double inverse = 1.0 - ratio;
         return new RgbColor(
-                r * inverse + target.r * ratio,
-                g * inverse + target.g * ratio,
-                b * inverse + target.b * ratio);
+                r * inverse + target.r * ratio, g * inverse + target.g * ratio, b * inverse + target.b * ratio);
     }
 
     public int toArgb(double alpha) {
@@ -55,4 +52,3 @@ public record RgbColor(double r, double g, double b) {
         return (int) Math.round(clamp(value) * 255.0);
     }
 }
-

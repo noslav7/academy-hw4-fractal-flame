@@ -11,9 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Helper that merges defaults, JSON config and CLI overrides into a {@link FractalConfig}.
- */
+/** Helper that merges defaults, JSON config and CLI overrides into a {@link FractalConfig}. */
 public final class ConfigBuilder {
 
     private final FractalConfig.Builder delegate = FractalConfig.builder();
@@ -117,6 +115,7 @@ public final class ConfigBuilder {
         }
         return result.isEmpty() ? null : result;
     }
+
     private static Palette asPalette(JsonFractalConfig.JsonPalette palette) {
         if (palette == null || palette.colors == null || palette.colors.isEmpty()) {
             return null;
@@ -146,7 +145,6 @@ public final class ConfigBuilder {
         return new CameraSettings(centerX, centerY, scale, rotation, autoFit, fitMargin, fitSamples);
     }
 
-
     private static RgbColor colorFrom(JsonFractalConfig.JsonColor color, int paletteIndex) {
         if (color != null && color.r() != null && color.g() != null && color.b() != null) {
             return RgbColor.of(color.r(), color.g(), color.b());
@@ -159,9 +157,7 @@ public final class ConfigBuilder {
         return new RgbColor(r, g, b);
     }
 
-    /**
-     * Thin wrapper for CLI-sourced values: merged using "CLI wins over everything" policy.
-     */
+    /** Thin wrapper for CLI-sourced values: merged using "CLI wins over everything" policy. */
     public static final class CliOverrides {
         private Integer width;
         private Integer height;
@@ -325,14 +321,13 @@ public final class ConfigBuilder {
             String name = pair[0].trim();
             double weight = Double.parseDouble(pair[1].trim());
             VariationType type = VariationType.fromName(name);
-            variations.add(
-                    new VariationDefinition(
-                            type,
-                            weight,
-                            colorFrom(null, index),
-                            Math.min(0.99, index / 12.0),
-                            AffineParams.IDENTITY,
-                            VariationParameters.empty()));
+            variations.add(new VariationDefinition(
+                    type,
+                    weight,
+                    colorFrom(null, index),
+                    Math.min(0.99, index / 12.0),
+                    AffineParams.IDENTITY,
+                    VariationParameters.empty()));
             index++;
         }
         if (variations.isEmpty()) {
@@ -356,4 +351,3 @@ public final class ConfigBuilder {
         return new AffineParams(values[0], values[1], values[2], values[3], values[4], values[5]);
     }
 }
-

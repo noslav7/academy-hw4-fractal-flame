@@ -37,4 +37,3 @@ public final class BoundingBox {
         return isEmpty() ? 0.0 : (minY + maxY) / 2.0;
     }
 }
-

@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Weighted selector that picks {@link VariationDefinition} instances according to their weight.
- */
+/** Weighted selector that picks {@link VariationDefinition} instances according to their weight. */
 public final class VariationSelector {
 
     private final List<WeightedVariation> weightedVariations;
@@ -18,13 +16,13 @@ public final class VariationSelector {
      * @param definitions source variations, must not be {@code null} or empty
      */
     public VariationSelector(List<VariationDefinition> definitions) {
-        List<VariationDefinition> safeDefinitions =
-                List.copyOf(Objects.requireNonNull(definitions, "definitions"));
+        List<VariationDefinition> safeDefinitions = List.copyOf(Objects.requireNonNull(definitions, "definitions"));
         if (safeDefinitions.isEmpty()) {
             throw new IllegalArgumentException("At least one variation definition is required");
         }
         this.weightedVariations = buildWeightedVariations(safeDefinitions);
-        this.totalWeight = this.weightedVariations.get(this.weightedVariations.size() - 1).cumulativeWeight();
+        this.totalWeight =
+                this.weightedVariations.get(this.weightedVariations.size() - 1).cumulativeWeight();
     }
 
     /**
@@ -46,9 +44,7 @@ public final class VariationSelector {
         return weightedVariations.get(weightedVariations.size() - 1).definition();
     }
 
-    /**
-     * Builds cumulative weights to simplify subsequent selection.
-     */
+    /** Builds cumulative weights to simplify subsequent selection. */
     private static List<WeightedVariation> buildWeightedVariations(List<VariationDefinition> definitions) {
         List<WeightedVariation> result = new ArrayList<>(definitions.size());
         double cumulative = 0.0;
@@ -59,9 +55,7 @@ public final class VariationSelector {
         return List.copyOf(result);
     }
 
-    /**
-     * Ensures the provided probability stays within the {@code [0, 1)} interval.
-     */
+    /** Ensures the provided probability stays within the {@code [0, 1)} interval. */
     private static double clampProbability(double value) {
         if (Double.isNaN(value) || value < 0.0) {
             return 0.0;
@@ -74,4 +68,3 @@ public final class VariationSelector {
 
     private record WeightedVariation(VariationDefinition definition, double cumulativeWeight) {}
 }
-

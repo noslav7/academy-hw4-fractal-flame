@@ -4,8 +4,8 @@ import academy.math.MutablePoint;
 import academy.math.Point;
 
 /**
- * Represents the affine transformation coefficients (a, b, c, d, e, f) that are
- * applied before any non-linear variation.
+ * Represents the affine transformation coefficients (a, b, c, d, e, f) that are applied before any non-linear
+ * variation.
  */
 public record AffineParams(double a, double b, double c, double d, double e, double f) {
 
@@ -19,4 +19,3 @@ public record AffineParams(double a, double b, double c, double d, double e, dou
         return target;
     }
 }
-
