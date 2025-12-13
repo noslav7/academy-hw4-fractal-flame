@@ -52,7 +52,7 @@ final class VariationFactory {
     }
 
     private static RgbColor paletteColor(int index) {
-        float hue = index % 6 / 6.0f;
+        float hue = (index % 6) / 6.0f;
         float saturation = 0.8f;
         float brightness = 0.9f;
         int rgb = java.awt.Color.HSBtoRGB(hue, saturation, brightness);
