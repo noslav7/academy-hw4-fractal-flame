@@ -88,14 +88,14 @@ JSON-конфиг повторяет структуру из `README.md`. Осн
 
 Готовые конфиги лежат в `config/presets`. Каждый записывает результат в свою PNG внутри `output/`.
 
-|    Пресет      |                                Команда                                 |                                        Что получается                                         |
-|----------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| Flame Classic  | `java -jar target/project-1.0.jar --config config/presets/flame.json`  | Базовая сцена «flame» из задания (результат сохраняется в `output/flame.png`).                |
-| Nebula Bloom   | `java -jar target/project-1.0.jar --config config/presets/nebula.json` | Плотные «газовые облака» с симметрией ×5 и вариациями `bubble/pdj/julian`.                    |
-| Ember Storm    | `java -jar target/project-1.0.jar --config config/presets/embers.json` | Тёплые «угли» на основе `horseshoe` и `fan2`, высокая контрастность.                          |
-| Polar Aurora   | `java -jar target/project-1.0.jar --config config/presets/aurora.json` | Квадратное изображение с яркими «ленточками» `sinusoidal/fan2`, хорошо подходит для постеров. |
+|     Пресет     |                                  Команда                                  |                                        Что получается                                         |
+|----------------|---------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| Flame Classic  | `java -jar target/project-1.0.jar --config config/presets/flame.json`     | Базовая сцена «flame» из задания (результат сохраняется в `output/flame.png`).                |
+| Nebula Bloom   | `java -jar target/project-1.0.jar --config config/presets/nebula.json`    | Плотные «газовые облака» с симметрией ×5 и вариациями `bubble/pdj/julian`.                    |
+| Ember Storm    | `java -jar target/project-1.0.jar --config config/presets/embers.json`    | Тёплые «угли» на основе `horseshoe` и `fan2`, высокая контрастность.                          |
+| Polar Aurora   | `java -jar target/project-1.0.jar --config config/presets/aurora.json`    | Квадратное изображение с яркими «ленточками» `sinusoidal/fan2`, хорошо подходит для постеров. |
 | Horseshoe Glow | `java -jar target/project-1.0.jar --config config/presets/horseshoe.json` | Подкова с усиленной симметрией и насыщенной палитрой (результат: `output/horseshoe.png`).     |
-| Julian Bloom   | `java -jar target/project-1.0.jar --config config/presets/julian.json`   | Многолучевой джулиан с повышенной симметрией и яркостью (результат: `output/julian.png`).     |
+| Julian Bloom   | `java -jar target/project-1.0.jar --config config/presets/julian.json`    | Многолучевой джулиан с повышенной симметрией и яркостью (результат: `output/julian.png`).     |
 
 ### 5. Как собрать свой вариант
 
