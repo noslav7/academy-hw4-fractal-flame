@@ -68,18 +68,34 @@ JSON-конфиг повторяет структуру из `README.md`. Осн
 }
 ```
 
-Поддерживаются вариации (регистр не важен): `linear`, `swirl`, `horseshoe`, `spherical`, `sinusoidal`, `bubble`, `pdj`, `fan2`, `julian`, `disc`, `spiral`, `heart`, `hyperbolic`, `fisheye`. Для `pdj`, `fan2`, `julian` параметры берутся из блока `params`.
+Поддерживаются вариации (регистр не важен, параметры см. в блоке `params` для `pdj`, `fan2`, `julian`):
+- `linear` — базовая передача координат без искажений.
+- `swirl` — закручивает точку по радиусу: sin/cos от r².
+- `horseshoe` — «подкова»: инвертирует и вытягивает координаты.
+- `spherical` — проецирует на сферу: делит на r².
+- `sinusoidal` — синусы по осям для мягких волн.
+- `bubble` — «пузырь»: сжатие по формуле 4/(r²+4).
+- `pdj` — PDJ-вариация, настраиваемые коэффициенты `a,b,c,d`.
+- `fan2` — веер с параметрами `x,y` (смещение угла).
+- `julian` — «джулианка» с `power` и `dist`, добавляет многолучевость.
+- `disc` — преобразование в дисковую проекцию (`θ/π` и sin/cos(πr)).
+- `spiral` — спиральное искажение с делением на r.
+- `heart` — «сердце»: угол * радиус, меняет знак Y.
+- `hyperbolic` — гиперболическое преобразование: sinθ/r и r·cosθ.
+- `fisheye` — «рыбий глаз»: инвертирует и меняет оси, фактор 2/(r+1).
 
 ### 4. Каталог пресетов
 
 Готовые конфиги лежат в `config/presets`. Каждый записывает результат в свою PNG внутри `output/`.
 
-|    Пресет     |                                Команда                                 |                                        Что получается                                         |
-|---------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| Flame Classic | `java -jar target/project-1.0.jar --config config/presets/flame.json`  | Базовая сцена «flame» из задания (результат сохраняется в `output/flame.png`).                |
-| Nebula Bloom  | `java -jar target/project-1.0.jar --config config/presets/nebula.json` | Плотные «газовые облака» с симметрией ×5 и вариациями `bubble/pdj/julian`.                    |
-| Ember Storm   | `java -jar target/project-1.0.jar --config config/presets/embers.json` | Тёплые «угли» на основе `horseshoe` и `fan2`, высокая контрастность.                          |
-| Polar Aurora  | `java -jar target/project-1.0.jar --config config/presets/aurora.json` | Квадратное изображение с яркими «ленточками» `sinusoidal/fan2`, хорошо подходит для постеров. |
+|    Пресет      |                                Команда                                 |                                        Что получается                                         |
+|----------------|------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| Flame Classic  | `java -jar target/project-1.0.jar --config config/presets/flame.json`  | Базовая сцена «flame» из задания (результат сохраняется в `output/flame.png`).                |
+| Nebula Bloom   | `java -jar target/project-1.0.jar --config config/presets/nebula.json` | Плотные «газовые облака» с симметрией ×5 и вариациями `bubble/pdj/julian`.                    |
+| Ember Storm    | `java -jar target/project-1.0.jar --config config/presets/embers.json` | Тёплые «угли» на основе `horseshoe` и `fan2`, высокая контрастность.                          |
+| Polar Aurora   | `java -jar target/project-1.0.jar --config config/presets/aurora.json` | Квадратное изображение с яркими «ленточками» `sinusoidal/fan2`, хорошо подходит для постеров. |
+| Horseshoe Glow | `java -jar target/project-1.0.jar --config config/presets/horseshoe.json` | Подкова с усиленной симметрией и насыщенной палитрой (результат: `output/horseshoe.png`).     |
+| Julian Bloom   | `java -jar target/project-1.0.jar --config config/presets/julian.json`   | Многолучевой джулиан с повышенной симметрией и яркостью (результат: `output/julian.png`).     |
 
 ### 5. Как собрать свой вариант
 

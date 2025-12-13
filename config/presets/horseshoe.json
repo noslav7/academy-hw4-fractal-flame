@@ -1,0 +1,48 @@
+{
+  "size": { "width": 1920, "height": 1080 },
+  "iteration_count": 1700000,
+  "output_path": "output/horseshoe.png",
+  "threads": 4,
+  "seed": 7.7001,
+  "burn_in": 20000,
+  "gamma_correction": true,
+  "gamma": 1.9,
+  "symmetry_level": 5,
+  "brightness": 2.6,
+  "functions": [
+    {
+      "name": "horseshoe",
+      "weight": 0.9,
+      "color": { "r": 0.95, "g": 0.55, "b": 0.2 },
+      "color_index": 0.25,
+      "affine": { "a": 0.7, "b": -0.15, "c": 0.5, "d": 0.12, "e": 0.7, "f": -0.3 }
+    },
+    {
+      "name": "linear",
+      "weight": 0.4,
+      "color": { "r": 0.2, "g": 0.7, "b": 0.95 },
+      "color_index": 0.55,
+      "affine": { "a": 0.9, "b": 0.0, "c": -0.25, "d": 0.0, "e": 0.9, "f": 0.1 }
+    },
+    {
+      "name": "swirl",
+      "weight": 0.3,
+      "color": { "r": 0.95, "g": 0.3, "b": 0.15 },
+      "color_index": 0.75,
+      "affine": { "a": 0.6, "b": 0.2, "c": -0.3, "d": -0.2, "e": 0.6, "f": 0.35 }
+    }
+  ],
+  "palette": {
+    "colors": [
+      { "r": 0.03, "g": 0.05, "b": 0.08 },
+      { "r": 0.96, "g": 0.52, "b": 0.12 },
+      { "r": 0.15, "g": 0.7, "b": 0.95 },
+      { "r": 0.95, "g": 0.15, "b": 0.35 },
+      { "r": 0.6, "g": 0.2, "b": 0.95 },
+      { "r": 0.1, "g": 0.95, "b": 0.55 }
+    ]
+  },
+  "camera": { "auto_fit": true, "fit_margin": 0.2, "fit_samples": 550000 },
+  "affine_params": { "a": 0.9, "b": 0.0, "c": -0.1, "d": 0.0, "e": 0.9, "f": -0.1 }
+}
+
