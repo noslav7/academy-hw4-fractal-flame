@@ -123,9 +123,7 @@ public final class ConfigBuilder {
         List<RgbColor> colors = new ArrayList<>();
         for (JsonFractalConfig.JsonColor color : palette.colors) {
             colors.add(RgbColor.of(
-                    valueOrDefault(color.r(), 0.0),
-                    valueOrDefault(color.g(), 0.0),
-                    valueOrDefault(color.b(), 0.0)));
+                    valueOrDefault(color.r(), 0.0), valueOrDefault(color.g(), 0.0), valueOrDefault(color.b(), 0.0)));
         }
         return colors.isEmpty() ? null : new Palette(colors);
     }

@@ -79,7 +79,7 @@ public enum VariationType {
             if (radius == 0.0) return ORIGIN;
             double theta = Math.atan2(point.y(), point.x());
             double t = theta + radius * fanY;
-            double s = fanX * Math.PI;
+            double s = fanX * fanX * Math.PI; // flam3: p1 = π * x²
             if (s == 0.0) {
                 s = Math.PI;
             }

@@ -123,7 +123,8 @@ class VariationTypeTest {
 
         Point result = VariationType.FAN2.apply(new Point(1.0, 0.0), definition, UNUSED_RANDOM);
 
-        assertPointEquals(0.0, 1.0, result);
+        // fan2 uses p1 = π * x^2, so with x=0.5 expect a 45-degree rotation around the unit circle.
+        assertPointEquals(Math.sqrt(0.5), Math.sqrt(0.5), result);
     }
 
     @Test

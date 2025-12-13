@@ -3,9 +3,9 @@ package academy.config;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
-import org.jspecify.annotations.NonNull;
 import java.nio.file.Path;
 import java.util.List;
+import org.jspecify.annotations.NonNull;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressFBWarnings(
