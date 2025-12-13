@@ -18,9 +18,21 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
 
-@Command(name = "fractal-flame", mixinStandardHelpOptions = true, version = "1.0")
+@Command(name = "fractal-flame", version = "1.0")
 public class Application implements Callable<Integer> {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
+
+    @Option(
+            names = {"--help"},
+            description = "Show this help message and exit.",
+            usageHelp = true)
+    private boolean usageHelpRequested;
+
+    @Option(
+            names = {"-V", "--version"},
+            description = "Print version information and exit.",
+            versionHelp = true)
+    private boolean versionRequested;
 
     @Option(
             names = {"-w", "--width"},
@@ -28,7 +40,7 @@ public class Application implements Callable<Integer> {
     private Integer width;
 
     @Option(
-            names = {"-H", "--height"},
+            names = {"-h", "-H", "--height"},
             description = "Image height in pixels")
     private Integer height;
 
