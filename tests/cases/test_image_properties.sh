@@ -44,7 +44,18 @@ else
 fi
 
 # Проверка сигнатуры PNG (первые 8 байт должны быть 89 50 4E 47 0D 0A 1A 0A)
-PNG_SIGNATURE=$(dd if="test_output.png" bs=8 count=1 2>/dev/null | xxd -p)
+# В CI-образе нет xxd, поэтому добавлены fallback на hexdump/od для чтения сигнатуры.
+read_signature() {
+    if command -v xxd >/dev/null 2>&1; then
+        dd if="test_output.png" bs=8 count=1 2>/dev/null | xxd -p
+    elif command -v hexdump >/dev/null 2>&1; then
+        dd if="test_output.png" bs=8 count=1 2>/dev/null | hexdump -v -e '1/1 "%02x"'
+    else
+        dd if="test_output.png" bs=8 count=1 2>/dev/null | od -An -tx1 -v | tr -d ' \n'
+    fi
+}
+
+PNG_SIGNATURE=$(read_signature)
 if [ "$PNG_SIGNATURE" = "89504e470d0a1a0a" ]; then
     echo "✓ Image file has valid PNG signature"
 else
