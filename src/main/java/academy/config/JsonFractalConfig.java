@@ -2,10 +2,14 @@ package academy.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.nio.file.Path;
 import java.util.List;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
+@SuppressFBWarnings(
+        value = "UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD",
+        justification = "Fields are populated by Jackson during deserialization")
 public class JsonFractalConfig {
 
     public Size size;

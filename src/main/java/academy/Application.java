@@ -120,10 +120,10 @@ public class Application implements Callable<Integer> {
             renderer.render(config);
             return ExitCode.OK;
         } catch (IllegalArgumentException e) {
-            LOGGER.error("Invalid configuration: {}", e.getMessage());
+            LOGGER.error("Invalid configuration", e);
             return ExitCode.USAGE;
         } catch (Exception e) {
-            LOGGER.error("Application failed: {}", e.getMessage(), e);
+            LOGGER.error("Application failed", e);
             return ExitCode.SOFTWARE;
         }
     }

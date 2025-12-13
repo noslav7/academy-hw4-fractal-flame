@@ -139,7 +139,7 @@ public final class ConfigBuilder {
         double centerY = camera.centerY != null ? camera.centerY : 0.0;
         double scale = camera.scale != null ? camera.scale : 1.0;
         double rotation = camera.rotation != null ? camera.rotation : 0.0;
-        boolean autoFit = camera.autoFit != null ? camera.autoFit : true;
+        boolean autoFit = camera.autoFit == null || camera.autoFit;
         double fitMargin = camera.fitMargin != null ? camera.fitMargin : 0.1;
         long fitSamples = camera.fitSamples != null ? camera.fitSamples : 200_000L;
         return new CameraSettings(centerX, centerY, scale, rotation, autoFit, fitMargin, fitSamples);
@@ -149,7 +149,7 @@ public final class ConfigBuilder {
         if (color != null && color.r() != null && color.g() != null && color.b() != null) {
             return RgbColor.of(color.r(), color.g(), color.b());
         }
-        float hue = (paletteIndex % 12) / 12.0f;
+        float hue = paletteIndex % 12 / 12.0f;
         int rgb = java.awt.Color.HSBtoRGB(hue, 0.7f, 0.9f);
         double r = ((rgb >> 16) & 0xFF) / 255.0;
         double g = ((rgb >> 8) & 0xFF) / 255.0;

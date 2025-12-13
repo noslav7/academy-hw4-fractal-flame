@@ -83,7 +83,8 @@ public enum VariationType {
             if (s == 0.0) {
                 s = Math.PI;
             }
-            double adjusted = t - Math.floor(t / (2.0 * s)) * (2.0 * s);
+            double period = 2.0 * s;
+            double adjusted = t - Math.floor(t / period) * period;
             double newTheta = adjusted > s ? theta - s : theta + s;
             return new Point(radius * Math.cos(newTheta), radius * Math.sin(newTheta));
         }

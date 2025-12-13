@@ -22,14 +22,12 @@ final class ProgressTracker {
         if (total <= 0) {
             return;
         }
-        int percent = (int) Math.round((current * 100.0) / total);
+        int percent = (int) Math.round(current * 100.0 / total);
         int previous = lastLoggedPercent.get();
-        if (percent - previous >= 5) {
-            if (lastLoggedPercent.compareAndSet(previous, percent)) {
-                LOGGER.atInfo()
-                        .addKeyValue("progressPercent", Math.min(100, percent))
-                        .log("Render progress");
-            }
+        if (percent - previous >= 5 && lastLoggedPercent.compareAndSet(previous, percent)) {
+            LOGGER.atInfo()
+                    .addKeyValue("progressPercent", Math.min(100, percent))
+                    .log("Render progress");
         }
     }
 }

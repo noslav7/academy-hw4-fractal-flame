@@ -84,4 +84,49 @@ class FractalRendererTest {
 
         assertEquals(4, nonBlackPixels, "Symmetry should replicate a point four times");
     }
+
+    @Test
+    void givenSingleColorPaletteWhenRenderThenImageMatchesPalette(@TempDir Path tempDir) throws Exception {
+        Path output = tempDir.resolve("palette.png");
+        RgbColor red = RgbColor.of(1.0, 0.0, 0.0);
+        VariationDefinition variation =
+                new VariationDefinition(VariationType.LINEAR, 1.0, red, 0.0, AffineParams.IDENTITY);
+
+        FractalConfig config = FractalConfig.builder()
+                .width(24)
+                .height(24)
+                .iterationCount(500L)
+                .threads(1)
+                .seed(2.0)
+                .outputPath(output)
+                .affineParams(new AffineParams(0.0, 0.0, 0.4, 0.0, 0.0, 0.0))
+                .variations(List.of(variation))
+                .burnInIterations(0L)
+                .palette(new Palette(List.of(red)))
+                .gammaCorrection(false)
+                .logGammaCorrection(false)
+                .symmetryLevel(1)
+                .camera(new CameraSettings(0.0, 0.0, 1.0, 0.0, false, 0.1, 10_000L))
+                .build();
+
+        new FractalRenderer().render(config);
+
+        BufferedImage image = ImageIO.read(output.toFile());
+        int expected = red.toArgb(1.0);
+        int redPixels = 0;
+        int otherColors = 0;
+        for (int y = 0; y < image.getHeight(); y++) {
+            for (int x = 0; x < image.getWidth(); x++) {
+                int rgb = image.getRGB(x, y);
+                if (rgb == expected) {
+                    redPixels++;
+                } else if (rgb != new RgbColor(0.0, 0.0, 0.0).toArgb(1.0)) {
+                    otherColors++;
+                }
+            }
+        }
+
+        assertTrue(redPixels > 0, "Rendered image should contain palette color");
+        assertEquals(0, otherColors, "Only palette colors should appear in the image");
+    }
 }
