@@ -2,12 +2,8 @@ package academy.config;
 
 import academy.camera.CameraSettings;
 import academy.color.Palette;
-import academy.color.RgbColor;
 import academy.variation.VariationDefinition;
-import academy.variation.VariationParameters;
-import academy.variation.VariationType;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -28,11 +24,11 @@ public final class ConfigBuilder {
         delegate.threads(jsonConfig.threads);
         delegate.seed(jsonConfig.seed);
         delegate.outputPath(jsonConfig.outputPath());
-        delegate.affineParams(asAffine(jsonConfig.affineParams));
-        delegate.variations(asVariations(jsonConfig.functions));
+        delegate.affineParams(JsonConfigMapper.toAffine(jsonConfig.affineParams));
+        delegate.variations(JsonConfigMapper.toVariations(jsonConfig.functions));
         delegate.burnInIterations(jsonConfig.burnIn);
-        delegate.palette(asPalette(jsonConfig.palette));
-        delegate.camera(asCamera(jsonConfig.camera));
+        delegate.palette(JsonConfigMapper.toPalette(jsonConfig.palette));
+        delegate.camera(JsonConfigMapper.toCamera(jsonConfig.camera));
         delegate.brightness(jsonConfig.brightness);
         delegate.gamma(jsonConfig.gamma);
         delegate.gammaCorrection(jsonConfig.gammaCorrection);
@@ -68,87 +64,6 @@ public final class ConfigBuilder {
         return delegate.build();
     }
 
-    private static AffineParams asAffine(JsonFractalConfig.JsonAffineParams params) {
-        if (params == null) return null;
-        Double a = params.a;
-        Double b = params.b;
-        Double c = params.c;
-        Double d = params.d;
-        Double e = params.e;
-        Double f = params.f;
-        if (a == null && b == null && c == null && d == null && e == null && f == null) {
-            return null;
-        }
-        return new AffineParams(
-                valueOrDefault(a, 1.0),
-                valueOrDefault(b, 0.0),
-                valueOrDefault(c, 0.0),
-                valueOrDefault(d, 0.0),
-                valueOrDefault(e, 1.0),
-                valueOrDefault(f, 0.0));
-    }
-
-    private static double valueOrDefault(Double value, double defaultValue) {
-        return value != null ? value : defaultValue;
-    }
-
-    private static List<VariationDefinition> asVariations(List<JsonFractalConfig.JsonFunction> functions) {
-        if (functions == null || functions.isEmpty()) {
-            return null;
-        }
-        List<VariationDefinition> result = new ArrayList<>();
-        int index = 0;
-        for (JsonFractalConfig.JsonFunction function : functions) {
-            if (function == null || function.name == null || function.weight == null) {
-                continue;
-            }
-            VariationType type = VariationType.fromName(function.name);
-            RgbColor color = colorFrom(function.color, index);
-            double colorIndex = function.colorIndex != null ? function.colorIndex : Math.min(0.99, index / 12.0);
-            AffineParams localAffine = asAffine(function.affine);
-            if (localAffine == null) {
-                localAffine = AffineParams.IDENTITY;
-            }
-            VariationParameters parameters = VariationParameters.of(function.params);
-            result.add(new VariationDefinition(type, function.weight, color, colorIndex, localAffine, parameters));
-            index++;
-        }
-        return result.isEmpty() ? null : result;
-    }
-
-    private static Palette asPalette(JsonFractalConfig.JsonPalette palette) {
-        if (palette == null || palette.colors == null || palette.colors.isEmpty()) {
-            return null;
-        }
-        List<RgbColor> colors = new ArrayList<>();
-        for (JsonFractalConfig.JsonColor color : palette.colors) {
-            colors.add(RgbColor.of(
-                    valueOrDefault(color.r(), 0.0), valueOrDefault(color.g(), 0.0), valueOrDefault(color.b(), 0.0)));
-        }
-        return colors.isEmpty() ? null : new Palette(colors);
-    }
-
-    private static CameraSettings asCamera(JsonFractalConfig.JsonCamera camera) {
-        if (camera == null) {
-            return null;
-        }
-        double centerX = camera.centerX != null ? camera.centerX : 0.0;
-        double centerY = camera.centerY != null ? camera.centerY : 0.0;
-        double scale = camera.scale != null ? camera.scale : 1.0;
-        double rotation = camera.rotation != null ? camera.rotation : 0.0;
-        boolean autoFit = camera.autoFit == null || camera.autoFit;
-        double fitMargin = camera.fitMargin != null ? camera.fitMargin : 0.1;
-        long fitSamples = camera.fitSamples != null ? camera.fitSamples : 200_000L;
-        return new CameraSettings(centerX, centerY, scale, rotation, autoFit, fitMargin, fitSamples);
-    }
-
-    private static RgbColor colorFrom(JsonFractalConfig.JsonColor color, int paletteIndex) {
-        if (color != null && color.r() != null && color.g() != null && color.b() != null) {
-            return RgbColor.of(color.r(), color.g(), color.b());
-        }
-        double hue = paletteIndex % 12 / 12.0;
-        return RgbColor.fromHsb(hue, 0.7, 0.9);
-    }
 
     /** Thin wrapper for CLI-sourced values: merged using "CLI wins over everything" policy. */
     public static final class CliOverrides {

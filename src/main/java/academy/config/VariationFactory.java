@@ -1,58 +1,31 @@
 package academy.config;
 
-import academy.color.RgbColor;
 import academy.variation.VariationDefinition;
-import academy.variation.VariationParameters;
-import academy.variation.VariationType;
-import java.util.ArrayList;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.file.Path;
 import java.util.List;
 
 final class VariationFactory {
 
     private VariationFactory() {}
 
+    private static final Path DEFAULT_PRESET_PATH = Path.of("config", "presets", "flame.json");
+
     static List<VariationDefinition> defaultVariations() {
-        List<VariationDefinition> defaults = new ArrayList<>();
-        defaults.add(new VariationDefinition(
-                VariationType.LINEAR,
-                1.0,
-                paletteColor(0),
-                0.05,
-                new AffineParams(0.8, 0, -0.5, 0, 0.8, -0.5),
-                VariationParameters.empty()));
-        defaults.add(new VariationDefinition(
-                VariationType.SWIRL,
-                0.9,
-                paletteColor(1),
-                0.25,
-                new AffineParams(0.6, 0, 0.6, 0, 0.6, -0.4),
-                VariationParameters.empty()));
-        defaults.add(new VariationDefinition(
-                VariationType.HORSESHOE,
-                0.8,
-                paletteColor(2),
-                0.45,
-                new AffineParams(0.5, 0.2, -0.3, -0.2, 0.5, 0.5),
-                VariationParameters.empty()));
-        defaults.add(new VariationDefinition(
-                VariationType.SINUSOIDAL,
-                0.6,
-                paletteColor(3),
-                0.65,
-                new AffineParams(0.7, -0.1, 0.4, 0.1, 0.7, 0.3),
-                VariationParameters.empty()));
-        defaults.add(new VariationDefinition(
-                VariationType.SPHERICAL,
-                0.5,
-                paletteColor(4),
-                0.85,
-                new AffineParams(0.4, 0.3, -0.2, -0.3, 0.4, 0.2),
-                VariationParameters.empty()));
-        return defaults;
+        JsonFractalConfig config = loadDefaultConfig();
+        List<VariationDefinition> variations = JsonConfigMapper.toVariations(config.functions);
+        if (variations == null || variations.isEmpty()) {
+            throw new IllegalStateException("Default variations are not configured: " + DEFAULT_PRESET_PATH);
+        }
+        return variations;
     }
 
-    private static RgbColor paletteColor(int index) {
-        double hue = index % 6 / 6.0;
-        return RgbColor.fromHsb(hue, 0.8, 0.9);
+    private static JsonFractalConfig loadDefaultConfig() {
+        ConfigLoader loader = new ConfigLoader(new ObjectMapper().findAndRegisterModules());
+        JsonFractalConfig config = loader.load(DEFAULT_PRESET_PATH);
+        if (config == null) {
+            throw new IllegalStateException("Unable to load default preset: " + DEFAULT_PRESET_PATH);
+        }
+        return config;
     }
 }

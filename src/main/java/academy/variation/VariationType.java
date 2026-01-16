@@ -1,19 +1,23 @@
 package academy.variation;
 
 import academy.math.Point;
+import academy.util.StringValidators;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 import java.util.SplittableRandom;
 
 /**
  * Subset of flame variations described by Draves. Each variation transforms a cartesian point into a new coordinate.
  */
 public enum VariationType {
-    LINEAR {
+    LINEAR("linear") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             return point;
         }
     },
-    SWIRL {
+    SWIRL("swirl") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double r2 = radiusSquared(point);
@@ -24,7 +28,7 @@ public enum VariationType {
             return new Point(x, y);
         }
     },
-    HORSESHOE {
+    HORSESHOE("horseshoe") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double r = hypot(point);
@@ -35,7 +39,7 @@ public enum VariationType {
             return new Point(x, y);
         }
     },
-    SPHERICAL {
+    SPHERICAL("spherical") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double r2 = radiusSquared(point);
@@ -44,13 +48,13 @@ public enum VariationType {
             return new Point(point.x() * factor, point.y() * factor);
         }
     },
-    SINUSOIDAL {
+    SINUSOIDAL("sinusoidal") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             return new Point(Math.sin(point.x()), Math.sin(point.y()));
         }
     },
-    BUBBLE {
+    BUBBLE("bubble") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double r2 = radiusSquared(point);
@@ -58,7 +62,7 @@ public enum VariationType {
             return new Point(point.x() * factor, point.y() * factor);
         }
     },
-    PDJ {
+    PDJ("pdj") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double a = definition.parameters().get("a", 1.0);
@@ -70,7 +74,7 @@ public enum VariationType {
             return new Point(x, y);
         }
     },
-    FAN2 {
+    FAN2("fan2") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double fanX = definition.parameters().get("x", 1.0);
@@ -89,7 +93,7 @@ public enum VariationType {
             return new Point(radius * Math.cos(newTheta), radius * Math.sin(newTheta));
         }
     },
-    JULIAN {
+    JULIAN("julian") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double rawPower = Math.abs(definition.parameters().get("power", 2.0));
@@ -104,7 +108,7 @@ public enum VariationType {
             return new Point(magnitude * Math.cos(angle), magnitude * Math.sin(angle));
         }
     },
-    DISC {
+    DISC("disc") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double radius = hypot(point);
@@ -116,7 +120,7 @@ public enum VariationType {
             return new Point(x, y);
         }
     },
-    SPIRAL {
+    SPIRAL("spiral") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double radius = hypot(point);
@@ -127,7 +131,7 @@ public enum VariationType {
             return new Point(x, y);
         }
     },
-    HEART {
+    HEART("heart") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double radius = hypot(point);
@@ -138,7 +142,7 @@ public enum VariationType {
             return new Point(x, y);
         }
     },
-    HYPERBOLIC {
+    HYPERBOLIC("hyperbolic") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double radius = hypot(point);
@@ -149,7 +153,7 @@ public enum VariationType {
             return new Point(x, y);
         }
     },
-    FISHEYE {
+    FISHEYE("fisheye") {
         @Override
         public Point apply(Point point, VariationDefinition definition, SplittableRandom random) {
             double radius = hypot(point);
@@ -160,13 +164,37 @@ public enum VariationType {
 
     public abstract Point apply(Point point, VariationDefinition definition, SplittableRandom random);
 
+    private static final int SYMBOL_MIN_LENGTH = 1;
+    private static final int SYMBOL_MAX_LENGTH = 32;
+    private static final Map<String, VariationType> BY_SYMBOL = buildSymbolIndex();
+    private final String[] symbols;
+
+    VariationType(String... symbols) {
+        this.symbols = symbols;
+    }
+
     public static VariationType fromName(String value) {
+        String normalized =
+                StringValidators.requireLength(value, "variation symbol", SYMBOL_MIN_LENGTH, SYMBOL_MAX_LENGTH)
+                        .toLowerCase(Locale.ROOT);
+        VariationType type = BY_SYMBOL.get(normalized);
+        if (type == null) {
+            throw new IllegalArgumentException("Unknown variation: " + value);
+        }
+        return type;
+    }
+
+    private static Map<String, VariationType> buildSymbolIndex() {
+        Map<String, VariationType> result = new HashMap<>();
         for (VariationType type : values()) {
-            if (type.name().equalsIgnoreCase(value)) {
-                return type;
+            for (String symbol : type.symbols) {
+                String normalized = symbol.toLowerCase(Locale.ROOT);
+                if (result.putIfAbsent(normalized, type) != null) {
+                    throw new IllegalStateException("Duplicate variation symbol: " + symbol);
+                }
             }
         }
-        throw new IllegalArgumentException("Unknown variation: " + value);
+        return Map.copyOf(result);
     }
 
     private static double radiusSquared(Point point) {

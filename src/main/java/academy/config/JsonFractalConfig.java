@@ -2,6 +2,7 @@ package academy.config;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import academy.util.StringValidators;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.nio.file.Path;
 import java.util.List;
@@ -103,6 +104,10 @@ public class JsonFractalConfig {
     }
 
     Path outputPath() {
-        return output_path != null ? Path.of(output_path) : null;
+        if (output_path == null) {
+            return null;
+        }
+        String normalized = StringValidators.requireLength(output_path, "output_path", 1, 256);
+        return Path.of(normalized);
     }
 }
