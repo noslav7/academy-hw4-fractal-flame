@@ -1,5 +1,6 @@
 package academy;
 
+import academy.config.CliParsers;
 import academy.config.ConfigBuilder;
 import academy.config.ConfigBuilder.CliOverrides;
 import academy.config.ConfigLoader;
@@ -190,9 +191,9 @@ public class Application implements Callable<Integer> {
         overrides.setLogGammaCorrection(logGammaCorrection);
         overrides.setSymmetryLevel(symmetryLevel);
         String normalizedAffine = normalizeOption(affine, "--affine-params", 5);
-        overrides.setAffineParams(normalizedAffine != null ? ConfigBuilder.parseAffine(normalizedAffine) : null);
+        overrides.setAffineParams(normalizedAffine != null ? CliParsers.parseAffine(normalizedAffine) : null);
         String normalizedFunctions = normalizeOption(functions, "--functions", 3);
-        overrides.setVariations(normalizedFunctions != null ? ConfigBuilder.parseFunctions(normalizedFunctions) : null);
+        overrides.setVariations(normalizedFunctions != null ? CliParsers.parseFunctions(normalizedFunctions) : null);
         return overrides;
     }
 

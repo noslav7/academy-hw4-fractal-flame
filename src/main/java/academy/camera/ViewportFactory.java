@@ -1,10 +1,9 @@
 package academy.camera;
 
 import academy.config.FractalConfig;
+import academy.fractal.FractalSampler;
 import academy.math.MutablePoint;
 import academy.math.Point;
-import academy.variation.VariationDefinition;
-import academy.variation.VariationSelector;
 import java.util.SplittableRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,19 +65,15 @@ public final class ViewportFactory {
 
     private static BoundingBox sampleBoundingBox(FractalConfig config, long samples) {
         SplittableRandom random = new SplittableRandom(Double.doubleToLongBits(config.seed()));
-        VariationSelector selector = new VariationSelector(config.variations());
         MutablePoint globalAffinePoint = new MutablePoint(0.0, 0.0);
         MutablePoint localAffinePoint = new MutablePoint(0.0, 0.0);
+        FractalSampler sampler = new FractalSampler(config);
         Point current = new Point(random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0));
         BoundingBox box = new BoundingBox();
         long burnIn = Math.min(config.burnInIterations(), samples / 2);
         for (long i = 0; i < samples; i++) {
-            VariationDefinition variation = selector.pick(random.nextDouble());
-            Point afterGlobal =
-                    config.affineParams().apply(current, globalAffinePoint).toImmutable();
-            Point afterLocal =
-                    variation.localAffine().apply(afterGlobal, localAffinePoint).toImmutable();
-            current = variation.type().apply(afterLocal, variation, random);
+            FractalSampler.StepResult step = sampler.step(current, random, globalAffinePoint, localAffinePoint);
+            current = step.point();
             if (i >= burnIn && isWithinBounds(current)) {
                 box.include(current);
             }

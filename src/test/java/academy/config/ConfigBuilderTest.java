@@ -12,6 +12,7 @@ import academy.variation.VariationDefinition;
 import academy.variation.VariationParameters;
 import academy.variation.VariationType;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,7 @@ class ConfigBuilderTest {
 
     @Test
     void givenValidFunctionListWhenParseFunctionsThenDefinitionsMatchInput() {
-        List<VariationDefinition> definitions = ConfigBuilder.parseFunctions("swirl:1.0,linear:0.5");
+        List<VariationDefinition> definitions = CliParsers.parseFunctions("swirl:1.0,linear:0.5");
 
         assertAll(
                 () -> assertEquals(2, definitions.size()),
@@ -35,12 +36,12 @@ class ConfigBuilderTest {
 
     @Test
     void givenBlankFunctionListWhenParseFunctionsThenReturnsNull() {
-        assertNull(ConfigBuilder.parseFunctions("   "));
+        assertNull(CliParsers.parseFunctions("   "));
     }
 
     @Test
     void givenSixNumbersWhenParseAffineThenCreatesMatchingParams() {
-        AffineParams params = ConfigBuilder.parseAffine("1,0.25,-0.5,0.75,1,0.1");
+        AffineParams params = CliParsers.parseAffine("1,0.25,-0.5,0.75,1,0.1");
 
         assertAll(
                 () -> assertEquals(1.0, params.a(), EPSILON),
@@ -153,13 +154,15 @@ class ConfigBuilderTest {
         overrides.setOutputPath(tempDir.resolve("cli.png"));
         overrides.setThreads(4);
         overrides.setAffineParams(new AffineParams(1, 0, 0, 0, 1, 0));
-        overrides.setVariations(List.of(new VariationDefinition(
+        List<VariationDefinition> variations = new ArrayList<>();
+        variations.add(new VariationDefinition(
                 VariationType.LINEAR,
                 1.0,
                 RgbColor.of(1.0, 0.0, 0.0),
                 0.0,
                 AffineParams.IDENTITY,
-                VariationParameters.empty())));
+                VariationParameters.empty()));
+        overrides.setVariations(variations);
         overrides.setBurnIn(5L);
         overrides.setPalette(new Palette(List.of(RgbColor.of(1.0, 1.0, 0.0))));
         overrides.setCamera(new CameraSettings(0, 0, 1.0, 0.0, false, 0.2, 20_000L));

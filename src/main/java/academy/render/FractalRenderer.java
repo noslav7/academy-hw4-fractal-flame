@@ -4,14 +4,10 @@ import academy.camera.Viewport;
 import academy.camera.ViewportFactory;
 import academy.color.RgbColor;
 import academy.config.FractalConfig;
+import academy.fractal.FractalSampler;
 import academy.math.MutablePoint;
 import academy.math.Point;
 import academy.variation.VariationDefinition;
-import academy.variation.VariationSelector;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -22,7 +18,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import javax.imageio.ImageIO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,9 +64,9 @@ public final class FractalRenderer {
             }
         }
 
-        BufferedImage image = merged.toImage(
+        var image = merged.toImage(
                 config.gamma(), config.gammaCorrection(), config.logGammaCorrection(), config.brightness());
-        writeImage(config.outputPath(), image);
+        ImageWriter.write(config.outputPath(), image);
 
         Duration duration = Duration.between(start, Instant.now());
         LOGGER.atInfo()
@@ -80,24 +75,13 @@ public final class FractalRenderer {
                 .log("Render completed");
     }
 
-    private static void writeImage(Path target, BufferedImage image) {
-        try {
-            Path parent = target.toAbsolutePath().getParent();
-            if (parent != null) {
-                Files.createDirectories(parent);
-            }
-            ImageIO.write(image, "PNG", target.toFile());
-        } catch (IOException e) {
-            throw new IllegalStateException("Unable to write image: " + target, e);
-        }
-    }
-
     private static final class Worker implements Callable<Histogram> {
         private final FractalConfig config;
         private final long iterations;
         private final ProgressTracker tracker;
         private final SplittableRandom random;
         private final Viewport viewport;
+        private final FractalSampler sampler;
 
         private Worker(FractalConfig config, long iterations, ProgressTracker tracker, Viewport viewport, long seed) {
             this.config = config;
@@ -105,6 +89,7 @@ public final class FractalRenderer {
             this.tracker = tracker;
             this.viewport = viewport;
             this.random = new SplittableRandom(seed);
+            this.sampler = new FractalSampler(config);
         }
 
         @Override
@@ -114,20 +99,13 @@ public final class FractalRenderer {
             MutablePoint localAffinePoint = new MutablePoint(0.0, 0.0);
             Point currentPoint = new Point(random.nextDouble(-1.0, 1.0), random.nextDouble(-1.0, 1.0));
             double colorIndex = random.nextDouble();
-            VariationSelector selector = new VariationSelector(config.variations());
             long burnIn = config.burnInIterations();
             long processed = 0;
             long plotted = 0;
             for (long iteration = 0; iteration < iterations; iteration++) {
-                VariationDefinition variation = selector.pick(random.nextDouble());
-                Point afterGlobal = config.affineParams()
-                        .apply(currentPoint, globalAffinePoint)
-                        .toImmutable();
-                Point afterLocal = variation
-                        .localAffine()
-                        .apply(afterGlobal, localAffinePoint)
-                        .toImmutable();
-                currentPoint = variation.type().apply(afterLocal, variation, random);
+                FractalSampler.StepResult step = sampler.step(currentPoint, random, globalAffinePoint, localAffinePoint);
+                VariationDefinition variation = step.variation();
+                currentPoint = step.point();
                 colorIndex = (colorIndex + variation.colorIndex()) * 0.5;
                 RgbColor paletteColor = config.palette().sample(colorIndex);
 

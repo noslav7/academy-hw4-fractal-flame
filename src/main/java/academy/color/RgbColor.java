@@ -1,7 +1,6 @@
 package academy.color;
 
-import java.util.Objects;
-import java.util.SplittableRandom;
+import java.awt.Color;
 
 /**
  * Simple RGB color stored as doubles in the range [0, 1]. Provides helpers for mixing and clamping to 8-bit channels.
@@ -21,16 +20,12 @@ public record RgbColor(double r, double g, double b) {
         return new RgbColor(r, g, b);
     }
 
-    public static RgbColor random(SplittableRandom random) {
-        return new RgbColor(random.nextDouble(), random.nextDouble(), random.nextDouble());
-    }
-
-    public RgbColor mix(RgbColor target, double blend) {
-        Objects.requireNonNull(target, "target");
-        double ratio = clamp(blend);
-        double inverse = 1.0 - ratio;
-        return new RgbColor(
-                r * inverse + target.r * ratio, g * inverse + target.g * ratio, b * inverse + target.b * ratio);
+    public static RgbColor fromHsb(double hue, double saturation, double brightness) {
+        int rgb = Color.HSBtoRGB((float) hue, (float) saturation, (float) brightness);
+        double red = ((rgb >> 16) & 0xFF) / 255.0;
+        double green = ((rgb >> 8) & 0xFF) / 255.0;
+        double blue = (rgb & 0xFF) / 255.0;
+        return new RgbColor(red, green, blue);
     }
 
     public int toArgb(double alpha) {

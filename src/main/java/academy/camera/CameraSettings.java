@@ -20,11 +20,4 @@ public record CameraSettings(
         }
     }
 
-    public CameraSettings withScale(double newScale) {
-        return new CameraSettings(centerX, centerY, newScale, rotationDegrees, autoFit, fitMargin, fitSamples);
-    }
-
-    public CameraSettings withCenter(double x, double y) {
-        return new CameraSettings(x, y, scale, rotationDegrees, autoFit, fitMargin, fitSamples);
-    }
 }
