@@ -8,7 +8,8 @@ import java.util.Map;
 import java.util.SplittableRandom;
 
 /**
- * Subset of flame variations described by Draves. Each variation transforms a cartesian point into a new coordinate.
+ * Набор вариаций фрактального пламени (по Draves).
+ * Каждая вариация преобразует декартову точку в новую координату.
  */
 public enum VariationType {
     LINEAR("linear") {
@@ -162,6 +163,14 @@ public enum VariationType {
         }
     };
 
+    /**
+     * Применяет вариацию к точке.
+     *
+     * @param point входная точка
+     * @param definition параметры вариации
+     * @param random генератор случайных чисел
+     * @return новая точка
+     */
     public abstract Point apply(Point point, VariationDefinition definition, SplittableRandom random);
 
     private static final int SYMBOL_MIN_LENGTH = 1;
@@ -173,7 +182,13 @@ public enum VariationType {
         this.symbols = symbols;
     }
 
-    public static VariationType fromName(String value) {
+    /**
+     * Возвращает тип вариации по строковому символу.
+     *
+     * @param value строковый символ вариации (например, {@code "swirl"})
+     * @return соответствующий тип вариации
+     */
+    public static VariationType fromSymbol(String value) {
         String normalized =
                 StringValidators.requireLength(value, "variation symbol", SYMBOL_MIN_LENGTH, SYMBOL_MAX_LENGTH)
                         .toLowerCase(Locale.ROOT);
@@ -184,6 +199,9 @@ public enum VariationType {
         return type;
     }
 
+    /**
+     * Строит карту "символ -> тип вариации".
+     */
     private static Map<String, VariationType> buildSymbolIndex() {
         Map<String, VariationType> result = new HashMap<>();
         for (VariationType type : values()) {
@@ -197,10 +215,16 @@ public enum VariationType {
         return Map.copyOf(result);
     }
 
+    /**
+     * Возвращает квадрат радиуса.
+     */
     private static double radiusSquared(Point point) {
         return point.x() * point.x() + point.y() * point.y();
     }
 
+    /**
+     * Возвращает радиус точки.
+     */
     private static double hypot(Point point) {
         return Math.hypot(point.x(), point.y());
     }

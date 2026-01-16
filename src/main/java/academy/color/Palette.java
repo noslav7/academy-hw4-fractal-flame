@@ -3,9 +3,17 @@ package academy.color;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Палитра цветов, используемая для интерполяции по индексу.
+ */
 public final class Palette {
     private final List<RgbColor> colors;
 
+    /**
+     * Создаёт палитру из списка цветов.
+     *
+     * @param colors список цветов (не пустой)
+     */
     public Palette(List<RgbColor> colors) {
         if (colors == null || colors.isEmpty()) {
             throw new IllegalArgumentException("Palette must contain at least one color");
@@ -13,6 +21,11 @@ public final class Palette {
         this.colors = List.copyOf(colors);
     }
 
+    /**
+     * Возвращает палитру по умолчанию.
+     *
+     * @return стандартная палитра
+     */
     public static Palette defaultPalette() {
         List<RgbColor> defaults = new ArrayList<>();
         defaults.add(new RgbColor(0.2, 0.2, 0.35));
@@ -23,6 +36,12 @@ public final class Palette {
         return new Palette(defaults);
     }
 
+    /**
+     * Возвращает интерполированный цвет по нормализованному индексу.
+     *
+     * @param t индекс в диапазоне [0..1)
+     * @return интерполированный цвет
+     */
     public RgbColor sample(double t) {
         double normalized = normalize(t);
         if (colors.size() == 1) {
@@ -39,6 +58,9 @@ public final class Palette {
                 start.b() * (1 - fraction) + end.b() * fraction);
     }
 
+    /**
+     * Нормализует значение в диапазон [0..1).
+     */
     private static double normalize(double value) {
         double v = value % 1.0;
         if (v < 0) v += 1.0;

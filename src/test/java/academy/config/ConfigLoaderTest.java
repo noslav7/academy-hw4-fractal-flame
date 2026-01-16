@@ -9,8 +9,14 @@ import java.nio.file.Path;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+/**
+ * Тесты загрузчика JSON-конфига.
+ */
 class ConfigLoaderTest {
 
+    /**
+     * Проверяет, что JSON-файл читается корректно.
+     */
     @Test
     void givenJsonFileWhenLoadThenParsesFields(@TempDir Path tempDir) throws Exception {
         Path jsonFile = tempDir.resolve("config.json");

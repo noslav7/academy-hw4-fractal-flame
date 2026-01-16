@@ -8,6 +8,9 @@ import java.nio.file.Path;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 
+/**
+ * DTO для JSON-конфига генератора фрактального пламени.
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressFBWarnings(
         value = "UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD",
@@ -49,8 +52,17 @@ public class JsonFractalConfig {
 
     public JsonCamera camera;
 
+    /**
+     * Размер изображения.
+     *
+     * @param width ширина
+     * @param height высота
+     */
     public record Size(Integer width, Integer height) {}
 
+    /**
+     * Описание одной вариации в JSON.
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JsonFunction {
         public String name;
@@ -66,8 +78,18 @@ public class JsonFractalConfig {
         public java.util.Map<String, Double> params;
     }
 
+    /**
+     * Цвет в диапазоне [0..1].
+     *
+     * @param r красный канал
+     * @param g зелёный канал
+     * @param b синий канал
+     */
     public record JsonColor(Double r, Double g, Double b) {}
 
+    /**
+     * Аффинные коэффициенты в JSON.
+     */
     public static class JsonAffineParams {
         public Double a;
         public Double b;
@@ -77,11 +99,17 @@ public class JsonFractalConfig {
         public Double f;
     }
 
+    /**
+     * Палитра в JSON.
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JsonPalette {
         public List<@NonNull JsonColor> colors;
     }
 
+    /**
+     * Настройки камеры в JSON.
+     */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JsonCamera {
         @JsonProperty("center_x")
@@ -103,6 +131,11 @@ public class JsonFractalConfig {
         public Long fitSamples;
     }
 
+    /**
+     * Возвращает путь к выходному файлу, если он указан.
+     *
+     * @return путь или {@code null}
+     */
     Path outputPath() {
         if (output_path == null) {
             return null;

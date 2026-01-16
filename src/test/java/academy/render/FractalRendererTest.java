@@ -19,8 +19,14 @@ import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+/**
+ * Тесты рендера и сохранения изображения.
+ */
 class FractalRendererTest {
 
+    /**
+     * Проверяет, что PNG записывается на диск.
+     */
     @Test
     void givenValidConfigWhenRenderThenPngIsWritten(@TempDir Path tempDir) throws Exception {
         Path output = tempDir.resolve("flame.png");
@@ -45,6 +51,9 @@ class FractalRendererTest {
                 () -> assertTrue(Files.size(output) > 0L, "Rendered image file should not be empty"));
     }
 
+    /**
+     * Проверяет поведение симметрии (дублирование точек).
+     */
     @Test
     void givenSymmetryLevelWhenRenderThenRotatesPointCopies(@TempDir Path tempDir) throws Exception {
         Path output = tempDir.resolve("symmetry.png");
@@ -85,6 +94,9 @@ class FractalRendererTest {
         assertEquals(4, nonBlackPixels, "Symmetry should replicate a point four times");
     }
 
+    /**
+     * Проверяет, что палитра применяется при рендеринге.
+     */
     @Test
     void givenSingleColorPaletteWhenRenderThenImageMatchesPalette(@TempDir Path tempDir) throws Exception {
         Path output = tempDir.resolve("palette.png");

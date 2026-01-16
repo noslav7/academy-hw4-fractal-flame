@@ -4,6 +4,9 @@ import academy.color.RgbColor;
 import java.awt.image.BufferedImage;
 import java.util.Arrays;
 
+/**
+ * Гистограмма попаданий и накопленных цветов.
+ */
 final class Histogram {
 
     private final int width;
@@ -13,6 +16,9 @@ final class Histogram {
     private final double[] green;
     private final double[] blue;
 
+    /**
+     * Создаёт гистограмму заданного размера.
+     */
     Histogram(int width, int height) {
         this.width = width;
         this.height = height;
@@ -23,6 +29,9 @@ final class Histogram {
         this.blue = new double[size];
     }
 
+    /**
+     * Добавляет цвет в ячейку гистограммы.
+     */
     void addPoint(int x, int y, RgbColor color) {
         if (x < 0 || y < 0 || x >= width || y >= height) return;
         int index = y * width + x;
@@ -32,6 +41,9 @@ final class Histogram {
         blue[index] += color.b();
     }
 
+    /**
+     * Объединяет другую гистограмму с текущей.
+     */
     void merge(Histogram other) {
         for (int i = 0; i < hits.length; i++) {
             hits[i] += other.hits[i];
@@ -41,6 +53,9 @@ final class Histogram {
         }
     }
 
+    /**
+     * Преобразует гистограмму в изображение.
+     */
     BufferedImage toImage(double gamma, boolean gammaCorrection, boolean logarithmicGamma, double exposure) {
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         var graphics = image.createGraphics();
@@ -71,6 +86,9 @@ final class Histogram {
         return image;
     }
 
+    /**
+     * Ограничивает значение диапазоном [0, 1].
+     */
     private static double clamp01(double value) {
         if (Double.isNaN(value)) return 0.0;
         if (value < 0.0) return 0.0;

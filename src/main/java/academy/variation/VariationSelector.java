@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/** Weighted selector that picks {@link VariationDefinition} instances according to their weight. */
+/**
+ * Выбирает вариацию по весам.
+ */
 public final class VariationSelector {
 
     private final List<WeightedVariation> weightedVariations;
     private final double totalWeight;
 
     /**
-     * Creates a selector for the provided variation definitions.
+     * Создаёт селектор для заданных вариаций.
      *
-     * @param definitions source variations, must not be {@code null} or empty
+     * @param definitions список вариаций (не пустой)
      */
     public VariationSelector(List<VariationDefinition> definitions) {
         List<VariationDefinition> safeDefinitions = List.copyOf(Objects.requireNonNull(definitions, "definitions"));
@@ -26,10 +28,10 @@ public final class VariationSelector {
     }
 
     /**
-     * Picks a variation based on a pseudo-random value from the {@code [0, 1)} range.
+     * Выбирает вариацию по псевдослучайному значению из диапазона {@code [0, 1)}.
      *
-     * @param randomValue value typically produced by {@link java.util.SplittableRandom#nextDouble()}
-     * @return variation definition selected in proportion to its weight
+     * @param randomValue значение, обычно получаемое из {@link java.util.SplittableRandom#nextDouble()}
+     * @return выбранная вариация
      */
     public VariationDefinition pick(double randomValue) {
         if (weightedVariations.size() == 1) {
@@ -44,7 +46,9 @@ public final class VariationSelector {
         return weightedVariations.get(weightedVariations.size() - 1).definition();
     }
 
-    /** Builds cumulative weights to simplify subsequent selection. */
+    /**
+     * Строит список кумулятивных весов.
+     */
     private static List<WeightedVariation> buildWeightedVariations(List<VariationDefinition> definitions) {
         List<WeightedVariation> result = new ArrayList<>(definitions.size());
         double cumulative = 0.0;
@@ -55,7 +59,9 @@ public final class VariationSelector {
         return List.copyOf(result);
     }
 
-    /** Ensures the provided probability stays within the {@code [0, 1)} interval. */
+    /**
+     * Ограничивает вероятность диапазоном {@code [0, 1)}.
+     */
     private static double clampProbability(double value) {
         if (Double.isNaN(value) || value < 0.0) {
             return 0.0;
@@ -66,5 +72,8 @@ public final class VariationSelector {
         return value;
     }
 
+    /**
+     * Пара вариации и накопленного веса.
+     */
     private record WeightedVariation(VariationDefinition definition, double cumulativeWeight) {}
 }

@@ -1,7 +1,9 @@
 package academy.math;
 
 /**
- * Immutable point in 2D space. Fractal rendering heavily relies on small objects, so we expose a lightweight record for
- * clarity.
+ * Неизменяемая точка в 2D пространстве.
+ *
+ * @param x координата X
+ * @param y координата Y
  */
 public record Point(double x, double y) {}

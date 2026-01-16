@@ -10,11 +10,17 @@ import java.util.Map;
 import java.util.SplittableRandom;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Тесты математических преобразований вариаций.
+ */
 class VariationTypeTest {
 
     private static final double EPSILON = 1.0e-12;
     private static final SplittableRandom UNUSED_RANDOM = new SplittableRandom(0);
 
+    /**
+     * Проверяет формулу вариации SWIRL.
+     */
     @Test
     void givenUnitPointWhenSwirlAppliedThenCoordinatesRotate() {
         Point point = new Point(1.0, 0.0);
@@ -24,6 +30,9 @@ class VariationTypeTest {
         assertPointEquals(Math.sin(1.0), Math.cos(1.0), result);
     }
 
+    /**
+     * Проверяет формулу вариации SPHERICAL.
+     */
     @Test
     void givenPointWhenSphericalAppliedThenDistanceInverts() {
         Point point = new Point(2.0, 0.0);
@@ -33,6 +42,9 @@ class VariationTypeTest {
         assertPointEquals(0.5, 0.0, result);
     }
 
+    /**
+     * Проверяет формулу вариации DISC.
+     */
     @Test
     void givenAxisPointWhenDiscAppliedThenProducesHalfArc() {
         Point result = VariationType.DISC.apply(new Point(0.0, 1.0), definition(VariationType.DISC), UNUSED_RANDOM);
@@ -40,6 +52,9 @@ class VariationTypeTest {
         assertPointEquals(0.0, -0.5, result);
     }
 
+    /**
+     * Проверяет формулу вариации SPIRAL.
+     */
     @Test
     void givenUnitPointWhenSpiralAppliedThenUnwrapsAroundOrigin() {
         Point result = VariationType.SPIRAL.apply(new Point(1.0, 0.0), definition(VariationType.SPIRAL), UNUSED_RANDOM);
@@ -47,6 +62,9 @@ class VariationTypeTest {
         assertPointEquals(1.8414709848078965, -0.5403023058681398, result);
     }
 
+    /**
+     * Проверяет формулу вариации HEART.
+     */
     @Test
     void givenUnitPointWhenHeartAppliedThenMirrorsAcrossAxis() {
         Point result = VariationType.HEART.apply(new Point(1.0, 0.0), definition(VariationType.HEART), UNUSED_RANDOM);
@@ -54,6 +72,9 @@ class VariationTypeTest {
         assertPointEquals(0.0, -1.0, result);
     }
 
+    /**
+     * Проверяет формулу вариации HYPERBOLIC.
+     */
     @Test
     void givenDiagonalPointWhenHyperbolicAppliedThenMatchesFormula() {
         Point result = VariationType.HYPERBOLIC.apply(
@@ -62,6 +83,9 @@ class VariationTypeTest {
         assertPointEquals(0.5, 1.0, result);
     }
 
+    /**
+     * Проверяет формулу вариации FISHEYE.
+     */
     @Test
     void givenUnitPointWhenFisheyeAppliedThenSwapsAndScales() {
         Point result =
@@ -70,6 +94,9 @@ class VariationTypeTest {
         assertPointEquals(0.0, 1.0, result);
     }
 
+    /**
+     * Проверяет вариацию LINEAR (без изменений).
+     */
     @Test
     void givenPointWhenLinearAppliedThenReturnsSamePoint() {
         Point point = new Point(0.25, -0.5);
@@ -79,6 +106,9 @@ class VariationTypeTest {
         assertPointEquals(point.x(), point.y(), result);
     }
 
+    /**
+     * Проверяет формулу вариации HORSESHOE.
+     */
     @Test
     void givenPointWhenHorseshoeAppliedThenMatchesFormula() {
         Point result =
@@ -87,6 +117,9 @@ class VariationTypeTest {
         assertPointEquals(1.0, 0.0, result);
     }
 
+    /**
+     * Проверяет формулу вариации SINUSOIDAL.
+     */
     @Test
     void givenPointWhenSinusoidalAppliedThenUsesSineOfCoordinates() {
         Point result = VariationType.SINUSOIDAL.apply(
@@ -95,6 +128,9 @@ class VariationTypeTest {
         assertPointEquals(1.0, 0.0, result);
     }
 
+    /**
+     * Проверяет формулу вариации BUBBLE.
+     */
     @Test
     void givenPointWhenBubbleAppliedThenScalesByBubbleFactor() {
         Point result = VariationType.BUBBLE.apply(new Point(1.0, 1.0), definition(VariationType.BUBBLE), UNUSED_RANDOM);
@@ -102,6 +138,9 @@ class VariationTypeTest {
         assertPointEquals(2.0 / 3.0, 2.0 / 3.0, result);
     }
 
+    /**
+     * Проверяет параметры вариации PDJ.
+     */
     @Test
     void givenParametersWhenPdjAppliedThenUsesCustomCoefficients() {
         VariationDefinition definition =
@@ -116,6 +155,9 @@ class VariationTypeTest {
         assertPointEquals(expectedX, expectedY, result);
     }
 
+    /**
+     * Проверяет параметры вариации FAN2.
+     */
     @Test
     void givenParametersWhenFan2AppliedThenOffsetsAngle() {
         VariationDefinition definition =
@@ -127,26 +169,41 @@ class VariationTypeTest {
         assertPointEquals(Math.sqrt(0.5), Math.sqrt(0.5), result);
     }
 
+    /**
+     * Проверяет вариацию JULIAN при произвольных параметрах.
+     */
     @Test
     void givenJulianParametersWhenApplyThenUsesPowerAndDist() {
         VariationParameters params = VariationParameters.of(Map.of("power", 3.0, "dist", 1.0));
         assertJulianMatchesFormula(new Point(0.0, 1.0), params, 0L);
     }
 
+    /**
+     * Проверяет вариацию JULIAN при power=2.
+     */
     @Test
     void givenJulianPowerTwoWhenApplyThenScalesByInversePower() {
         VariationParameters params = VariationParameters.of(Map.of("power", 2.0, "dist", 1.0));
         assertJulianMatchesFormula(new Point(1.0, 0.0), params, 0L);
     }
 
+    /**
+     * Создаёт базовое определение вариации для тестов.
+     */
     private VariationDefinition definition(VariationType type) {
         return new VariationDefinition(type, 1.0, new RgbColor(1, 1, 1), 0.5, AffineParams.IDENTITY);
     }
 
+    /**
+     * Создаёт определение вариации с параметрами.
+     */
     private VariationDefinition definition(VariationType type, VariationParameters parameters) {
         return new VariationDefinition(type, 1.0, new RgbColor(1, 1, 1), 0.5, AffineParams.IDENTITY, parameters);
     }
 
+    /**
+     * Проверяет соответствие формуле JULIAN.
+     */
     private void assertJulianMatchesFormula(Point input, VariationParameters params, long seed) {
         SplittableRandom random = new SplittableRandom(seed);
         Point result = VariationType.JULIAN.apply(input, definition(VariationType.JULIAN, params), random);
@@ -165,6 +222,9 @@ class VariationTypeTest {
         assertPointEquals(magnitude * Math.cos(angle), magnitude * Math.sin(angle), result);
     }
 
+    /**
+     * Сравнивает координаты с эпсилон-точностью.
+     */
     private void assertPointEquals(double expectedX, double expectedY, Point result) {
         assertAll(
                 () -> assertEquals(expectedX, result.x(), EPSILON), () -> assertEquals(expectedY, result.y(), EPSILON));

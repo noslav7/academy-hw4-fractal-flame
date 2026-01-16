@@ -6,8 +6,14 @@ import academy.color.RgbColor;
 import java.awt.image.BufferedImage;
 import org.junit.jupiter.api.Test;
 
+/**
+ * Тесты преобразования гистограммы в изображение.
+ */
 class HistogramTest {
 
+    /**
+     * Проверяет, что логарифмическая гамма уменьшает контраст.
+     */
     @Test
     void logarithmicGammaCompressesDynamicRange() {
         Histogram histogram = new Histogram(2, 1);
@@ -31,6 +37,9 @@ class HistogramTest {
                 "Logarithmic correction should reduce contrast compared to linear scaling");
     }
 
+    /**
+     * Проверяет корректность логарифмической гаммы на единственном попадании.
+     */
     @Test
     void logarithmicGammaHandlesSingleHit() {
         Histogram histogram = new Histogram(1, 1);
@@ -41,6 +50,9 @@ class HistogramTest {
         assertTrue(channel(result, 0, 0) > 0, "Single hit should remain visible after log scaling");
     }
 
+    /**
+     * Возвращает красный канал пикселя.
+     */
     private static int channel(BufferedImage image, int x, int y) {
         return (image.getRGB(x, y) >> 16) & 0xFF;
     }

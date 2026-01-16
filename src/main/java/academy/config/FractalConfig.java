@@ -9,7 +9,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-/** Effective configuration used by the renderer after merging defaults, JSON config and CLI overrides. */
+/**
+ * Итоговая конфигурация рендера после объединения дефолтов, JSON и CLI.
+ *
+ * @param width ширина изображения
+ * @param height высота изображения
+ * @param iterationCount число итераций
+ * @param seed seed генератора
+ * @param outputPath путь к выходному PNG
+ * @param threads число потоков
+ * @param affineParams глобальные аффинные параметры
+ * @param variations список вариаций
+ * @param burnInIterations число итераций прогрева
+ * @param palette палитра цветов
+ * @param camera настройки камеры
+ * @param brightness яркость
+ * @param gamma гамма
+ * @param gammaCorrection флаг гамма-коррекции
+ * @param logGammaCorrection флаг логарифмической гамма-коррекции
+ * @param symmetryLevel уровень симметрии
+ */
 public record FractalConfig(
         int width,
         int height,
@@ -28,6 +47,9 @@ public record FractalConfig(
         boolean logGammaCorrection,
         int symmetryLevel) {
 
+    /**
+     * Проверяет корректность значений конфигурации.
+     */
     public FractalConfig {
         Objects.requireNonNull(outputPath, "outputPath");
         Objects.requireNonNull(affineParams, "affineParams");
@@ -43,10 +65,20 @@ public record FractalConfig(
         if (symmetryLevel < 1) throw new IllegalArgumentException("Symmetry level must be >= 1");
     }
 
+    /**
+     * Создаёт новый сборщик конфигурации.
+     *
+     * @return builder
+     */
     public static Builder builder() {
         return new Builder();
     }
 
+    /**
+     * Создаёт сборщик на основе текущих значений.
+     *
+     * @return builder с текущими параметрами
+     */
     public Builder toBuilder() {
         return builder()
                 .width(width)
@@ -67,10 +99,18 @@ public record FractalConfig(
                 .symmetryLevel(symmetryLevel);
     }
 
+    /**
+     * Возвращает конфигурацию по умолчанию.
+     *
+     * @return дефолтная конфигурация
+     */
     public static FractalConfig defaults() {
         return builder().build();
     }
 
+    /**
+     * Сборщик конфигурации с дефолтными значениями.
+     */
     public static final class Builder {
         private Integer width;
         private Integer height;
@@ -104,41 +144,49 @@ public record FractalConfig(
         private static final boolean DEFAULT_LOG_GAMMA_CORRECTION = true;
         private static final int DEFAULT_SYMMETRY = 1;
 
+        /** @param value ширина изображения */
         public Builder width(Integer value) {
             this.width = value;
             return this;
         }
 
+        /** @param value высота изображения */
         public Builder height(Integer value) {
             this.height = value;
             return this;
         }
 
+        /** @param value число итераций */
         public Builder iterationCount(Long value) {
             this.iterationCount = value;
             return this;
         }
 
+        /** @param value seed генератора */
         public Builder seed(Double value) {
             this.seed = value;
             return this;
         }
 
+        /** @param value путь к выходному PNG */
         public Builder outputPath(Path value) {
             this.outputPath = value;
             return this;
         }
 
+        /** @param value число потоков */
         public Builder threads(Integer value) {
             this.threads = value;
             return this;
         }
 
+        /** @param value глобальные аффинные параметры */
         public Builder affineParams(AffineParams value) {
             this.affineParams = value;
             return this;
         }
 
+        /** @param value список вариаций */
         public Builder variations(List<VariationDefinition> value) {
             if (value == null) {
                 this.variations = null;
@@ -148,46 +196,59 @@ public record FractalConfig(
             return this;
         }
 
+        /** @param value число итераций прогрева */
         public Builder burnInIterations(Long value) {
             this.burnInIterations = value;
             return this;
         }
 
+        /** @param value палитра */
         public Builder palette(Palette value) {
             this.palette = value;
             return this;
         }
 
+        /** @param value настройки камеры */
         public Builder camera(CameraSettings value) {
             this.camera = value;
             return this;
         }
 
+        /** @param value яркость */
         public Builder brightness(Double value) {
             this.brightness = value;
             return this;
         }
 
+        /** @param value гамма */
         public Builder gamma(Double value) {
             this.gamma = value;
             return this;
         }
 
+        /** @param value флаг гамма-коррекции */
         public Builder gammaCorrection(Boolean value) {
             this.gammaCorrection = value;
             return this;
         }
 
+        /** @param value флаг логарифмической гамма-коррекции */
         public Builder logGammaCorrection(Boolean value) {
             this.logGammaCorrection = value;
             return this;
         }
 
+        /** @param value уровень симметрии */
         public Builder symmetryLevel(Integer value) {
             this.symmetryLevel = value;
             return this;
         }
 
+        /**
+         * Строит конфигурацию с учётом дефолтов.
+         *
+         * @return итоговая конфигурация
+         */
         public FractalConfig build() {
             int finalWidth = width != null ? width : DEFAULT_WIDTH;
             int finalHeight = height != null ? height : DEFAULT_HEIGHT;
@@ -227,7 +288,13 @@ public record FractalConfig(
         }
     }
 
+    /**
+     * Поставляет набор вариаций по умолчанию.
+     */
     private static final class DefaultVariations {
+        /**
+         * Создаёт список вариаций по умолчанию.
+         */
         private static List<VariationDefinition> create() {
             return Collections.unmodifiableList(VariationFactory.defaultVariations());
         }

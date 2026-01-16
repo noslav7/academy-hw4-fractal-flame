@@ -18,10 +18,16 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+/**
+ * Тесты сборщика конфигурации.
+ */
 class ConfigBuilderTest {
 
     private static final double EPSILON = 1.0e-12;
 
+    /**
+     * Проверяет разбор списка вариаций из CLI.
+     */
     @Test
     void givenValidFunctionListWhenParseFunctionsThenDefinitionsMatchInput() {
         List<VariationDefinition> definitions = CliParsers.parseFunctions("swirl:1.0,linear:0.5");
@@ -34,11 +40,17 @@ class ConfigBuilderTest {
                 () -> assertEquals(0.5, definitions.get(1).weight(), EPSILON));
     }
 
+    /**
+     * Проверяет реакцию на пустую строку вариаций.
+     */
     @Test
     void givenBlankFunctionListWhenParseFunctionsThenReturnsNull() {
         assertNull(CliParsers.parseFunctions("   "));
     }
 
+    /**
+     * Проверяет разбор аффинных коэффициентов.
+     */
     @Test
     void givenSixNumbersWhenParseAffineThenCreatesMatchingParams() {
         AffineParams params = CliParsers.parseAffine("1,0.25,-0.5,0.75,1,0.1");
@@ -52,6 +64,9 @@ class ConfigBuilderTest {
                 () -> assertEquals(0.1, params.f(), EPSILON));
     }
 
+    /**
+     * Проверяет применение полного JSON-конфига.
+     */
     @Test
     void givenJsonConfigWithAllFieldsWhenApplyThenBuildsExpectedConfig(@TempDir Path tempDir) {
         JsonFractalConfig json = new JsonFractalConfig();
@@ -139,6 +154,9 @@ class ConfigBuilderTest {
                 () -> assertEquals(10_000L, config.camera().fitSamples()));
     }
 
+    /**
+     * Проверяет приоритет CLI над JSON.
+     */
     @Test
     void givenJsonAndCliOverridesWhenApplyThenCliWins(@TempDir Path tempDir) {
         JsonFractalConfig json = new JsonFractalConfig();

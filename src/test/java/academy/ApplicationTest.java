@@ -9,8 +9,14 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine;
 
+/**
+ * Проверяет работу CLI приложения.
+ */
 class ApplicationTest {
 
+    /**
+     * Проверяет, что CLI параметры применяются и PNG сохраняется.
+     */
     @Test
     void givenCliOptionsWhenExecuteThenRendersAndAppliesSystemProps(@TempDir Path tempDir) {
         Path output = tempDir.resolve("cli.png");

@@ -10,12 +10,18 @@ import academy.variation.VariationType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Преобразует JSON-структуры в внутренние доменные объекты конфигурации.
+ */
 final class JsonConfigMapper {
     private JsonConfigMapper() {}
 
     private static final int SYMBOL_MIN_LENGTH = 1;
     private static final int SYMBOL_MAX_LENGTH = 32;
 
+    /**
+     * Преобразует JSON-аффинные коэффициенты.
+     */
     static AffineParams toAffine(JsonFractalConfig.JsonAffineParams params) {
         if (params == null) return null;
         Double a = params.a;
@@ -36,6 +42,9 @@ final class JsonConfigMapper {
                 valueOrDefault(f, 0.0));
     }
 
+    /**
+     * Преобразует список JSON-функций в вариации.
+     */
     static List<VariationDefinition> toVariations(List<JsonFractalConfig.JsonFunction> functions) {
         if (functions == null || functions.isEmpty()) {
             return null;
@@ -48,7 +57,7 @@ final class JsonConfigMapper {
             }
             String symbol =
                     StringValidators.requireLength(function.name, "variation symbol", SYMBOL_MIN_LENGTH, SYMBOL_MAX_LENGTH);
-            VariationType type = VariationType.fromName(symbol);
+            VariationType type = VariationType.fromSymbol(symbol);
             RgbColor color = colorFrom(function.color, index);
             double colorIndex = function.colorIndex != null ? function.colorIndex : Math.min(0.99, index / 12.0);
             AffineParams localAffine = toAffine(function.affine);
@@ -62,6 +71,9 @@ final class JsonConfigMapper {
         return result.isEmpty() ? null : result;
     }
 
+    /**
+     * Преобразует JSON-палитру.
+     */
     static Palette toPalette(JsonFractalConfig.JsonPalette palette) {
         if (palette == null || palette.colors == null || palette.colors.isEmpty()) {
             return null;
@@ -74,6 +86,9 @@ final class JsonConfigMapper {
         return colors.isEmpty() ? null : new Palette(colors);
     }
 
+    /**
+     * Преобразует JSON-настройки камеры.
+     */
     static CameraSettings toCamera(JsonFractalConfig.JsonCamera camera) {
         if (camera == null) {
             return null;
@@ -88,6 +103,9 @@ final class JsonConfigMapper {
         return new CameraSettings(centerX, centerY, scale, rotation, autoFit, fitMargin, fitSamples);
     }
 
+    /**
+     * Возвращает цвет функции или вычисляет запасной цвет по индексу.
+     */
     private static RgbColor colorFrom(JsonFractalConfig.JsonColor color, int paletteIndex) {
         if (color != null && color.r() != null && color.g() != null && color.b() != null) {
             return RgbColor.of(color.r(), color.g(), color.b());
@@ -96,6 +114,9 @@ final class JsonConfigMapper {
         return RgbColor.fromHsb(hue, 0.7, 0.9);
     }
 
+    /**
+     * Возвращает значение или дефолт.
+     */
     private static double valueOrDefault(Double value, double defaultValue) {
         return value != null ? value : defaultValue;
     }

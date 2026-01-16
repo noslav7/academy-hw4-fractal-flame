@@ -21,10 +21,18 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Рендерер фрактального пламени: запускает расчёт и сохраняет изображение.
+ */
 public final class FractalRenderer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FractalRenderer.class);
 
+    /**
+     * Выполняет рендер изображения по конфигурации.
+     *
+     * @param config конфигурация рендера
+     */
     public void render(FractalConfig config) {
         Instant start = Instant.now();
         LOGGER.atInfo()
@@ -75,6 +83,9 @@ public final class FractalRenderer {
                 .log("Render completed");
     }
 
+    /**
+     * Рабочая задача, вычисляющая часть гистограммы.
+     */
     private static final class Worker implements Callable<Histogram> {
         private final FractalConfig config;
         private final long iterations;
@@ -83,6 +94,9 @@ public final class FractalRenderer {
         private final Viewport viewport;
         private final FractalSampler sampler;
 
+        /**
+         * Создаёт воркер для выполнения части итераций.
+         */
         private Worker(FractalConfig config, long iterations, ProgressTracker tracker, Viewport viewport, long seed) {
             this.config = config;
             this.iterations = iterations;
@@ -93,6 +107,9 @@ public final class FractalRenderer {
         }
 
         @Override
+        /**
+         * Выполняет рендеринг своей части и возвращает гистограмму.
+         */
         public Histogram call() {
             Histogram histogram = new Histogram(viewport.width(), viewport.height());
             MutablePoint globalAffinePoint = new MutablePoint(0.0, 0.0);
@@ -126,6 +143,9 @@ public final class FractalRenderer {
             return histogram;
         }
 
+        /**
+         * Добавляет точку с учётом симметрии.
+         */
         private void plotWithSymmetry(Histogram histogram, Point point, RgbColor color) {
             int symmetry = config.symmetryLevel();
             if (symmetry <= 1) {
@@ -141,6 +161,9 @@ public final class FractalRenderer {
             }
         }
 
+        /**
+         * Добавляет одну точку в гистограмму.
+         */
         private void plotSingle(Histogram histogram, Point point, RgbColor color) {
             Viewport.ScreenPoint screen = viewport.project(point);
             if (screen.isInside()) {

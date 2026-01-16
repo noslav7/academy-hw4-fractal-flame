@@ -16,8 +16,14 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+/**
+ * Небольшой бенчмарк для оценки многопоточности.
+ */
 class PerformanceBenchmarkTest {
 
+    /**
+     * Проверяет рендер при разных количествах потоков.
+     */
     @Test
     void givenThreadCountsWhenRenderThenRecordDurations(@TempDir Path tempDir) throws Exception {
         VariationDefinition variation = new VariationDefinition(

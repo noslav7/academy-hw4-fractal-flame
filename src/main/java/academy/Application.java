@@ -19,6 +19,9 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
 
+/**
+ * Точка входа CLI: разбирает параметры, формирует конфигурацию и запускает рендер.
+ */
 @Command(name = "fractal-flame", version = "1.0")
 public class Application implements Callable<Integer> {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
@@ -118,6 +121,11 @@ public class Application implements Callable<Integer> {
     private final ConfigLoader configLoader = new ConfigLoader(new ObjectMapper().findAndRegisterModules());
     private final FractalRenderer renderer = new FractalRenderer();
 
+    /**
+     * Запускает CLI и возвращает код завершения приложения.
+     *
+     * @param args аргументы командной строки
+     */
     public static void main(String[] args) {
         int exitCode = new CommandLine(new Application())
                 .setUnmatchedArgumentsAllowed(true)
@@ -126,6 +134,11 @@ public class Application implements Callable<Integer> {
     }
 
     @Override
+    /**
+     * Основной сценарий выполнения: применяет параметры, строит конфиг, запускает рендер.
+     *
+     * @return код завершения (OK/USAGE/SOFTWARE)
+     */
     public Integer call() {
         try {
             applyUnmatchedSystemProperties();
@@ -141,12 +154,20 @@ public class Application implements Callable<Integer> {
         }
     }
 
+    /**
+     * Собирает итоговую конфигурацию с учётом JSON и CLI.
+     *
+     * @return итоговая конфигурация рендера
+     */
     private FractalConfig buildConfig() {
         JsonFractalConfig jsonConfig = configLoader.load(configPath);
         CliOverrides overrides = buildOverrides();
         return new ConfigBuilder().apply(jsonConfig).apply(overrides).build();
     }
 
+    /**
+     * Применяет дополнительные JVM-свойства, переданные через {@code -Dkey=value}.
+     */
     private void applyUnmatchedSystemProperties() {
         if (unmatched == null || unmatched.isEmpty()) {
             return;
@@ -175,6 +196,11 @@ public class Application implements Callable<Integer> {
         }
     }
 
+    /**
+     * Строит набор переопределений параметров, указанных через CLI.
+     *
+     * @return значения, которые должны переопределить конфиг
+     */
     private CliOverrides buildOverrides() {
         CliOverrides overrides = new CliOverrides();
         overrides.setWidth(width);
@@ -198,12 +224,12 @@ public class Application implements Callable<Integer> {
     }
 
     /**
-     * Normalizes CLI string options by trimming and validating their length.
+     * Нормализует строковый параметр CLI: обрезает пробелы и проверяет длину.
      *
-     * @param value raw option value
-     * @param optionName human-readable option identifier used in error messages
-     * @param minLength minimum allowed length for the trimmed value
-     * @return trimmed value or {@code null} when the option was not provided
+     * @param value исходное значение опции
+     * @param optionName имя опции для текста ошибки
+     * @param minLength минимальная длина после обрезки
+     * @return нормализованная строка или {@code null}, если опция не задана
      */
     private String normalizeOption(String value, String optionName, int minLength) {
         if (value == null) {

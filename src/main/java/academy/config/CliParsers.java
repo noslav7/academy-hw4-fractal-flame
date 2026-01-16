@@ -8,6 +8,9 @@ import academy.variation.VariationType;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Утилиты для парсинга строковых параметров CLI.
+ */
 public final class CliParsers {
     private CliParsers() {}
 
@@ -18,6 +21,12 @@ public final class CliParsers {
     private static final int WEIGHT_MIN_LENGTH = 1;
     private static final int WEIGHT_MAX_LENGTH = 32;
 
+    /**
+     * Разбирает список вариаций формата {@code name:weight,name:weight}.
+     *
+     * @param raw строка из CLI
+     * @return список определений вариаций или {@code null}, если строка пустая
+     */
     public static List<VariationDefinition> parseFunctions(String raw) {
         if (raw == null || raw.isBlank()) {
             return null;
@@ -36,7 +45,7 @@ public final class CliParsers {
             String weightValue =
                     StringValidators.requireLength(pair[1], "variation weight", WEIGHT_MIN_LENGTH, WEIGHT_MAX_LENGTH);
             double weight = Double.parseDouble(weightValue);
-            VariationType type = VariationType.fromName(name);
+            VariationType type = VariationType.fromSymbol(name);
             double hue = index % 12 / 12.0;
             variations.add(new VariationDefinition(
                     type,
@@ -53,6 +62,12 @@ public final class CliParsers {
         return variations;
     }
 
+    /**
+     * Разбирает строку аффинных коэффициентов {@code a,b,c,d,e,f}.
+     *
+     * @param raw строка из CLI
+     * @return аффинные коэффициенты или {@code null}, если строка пустая
+     */
     public static AffineParams parseAffine(String raw) {
         if (raw == null || raw.isBlank()) {
             return null;

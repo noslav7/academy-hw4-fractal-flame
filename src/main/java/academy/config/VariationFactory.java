@@ -5,12 +5,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Path;
 import java.util.List;
 
+/**
+ * Источник дефолтных вариаций из JSON-пресета.
+ */
 final class VariationFactory {
 
     private VariationFactory() {}
 
     private static final Path DEFAULT_PRESET_PATH = Path.of("config", "presets", "flame.json");
 
+    /**
+     * Загружает список вариаций по умолчанию.
+     *
+     * @return список вариаций
+     */
     static List<VariationDefinition> defaultVariations() {
         JsonFractalConfig config = loadDefaultConfig();
         List<VariationDefinition> variations = JsonConfigMapper.toVariations(config.functions);
@@ -20,6 +28,11 @@ final class VariationFactory {
         return variations;
     }
 
+    /**
+     * Загружает дефолтный пресет конфигурации.
+     *
+     * @return JSON-конфиг
+     */
     private static JsonFractalConfig loadDefaultConfig() {
         ConfigLoader loader = new ConfigLoader(new ObjectMapper().findAndRegisterModules());
         JsonFractalConfig config = loader.load(DEFAULT_PRESET_PATH);

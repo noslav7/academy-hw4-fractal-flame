@@ -5,6 +5,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Отслеживает прогресс рендера и пишет лог при достижении порога.
+ */
 final class ProgressTracker {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProgressTracker.class);
 
@@ -12,10 +15,20 @@ final class ProgressTracker {
     private final AtomicLong processed = new AtomicLong();
     private final AtomicInteger lastLoggedPercent = new AtomicInteger();
 
+    /**
+     * Создаёт трекер прогресса.
+     *
+     * @param total общее число итераций
+     */
     ProgressTracker(long total) {
         this.total = total;
     }
 
+    /**
+     * Увеличивает счётчик и логирует прогресс.
+     *
+     * @param delta добавляемое число итераций
+     */
     void increment(long delta) {
         if (delta <= 0) return;
         long current = processed.addAndGet(delta);

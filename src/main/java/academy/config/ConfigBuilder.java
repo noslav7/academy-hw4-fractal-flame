@@ -7,11 +7,19 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
-/** Helper that merges defaults, JSON config and CLI overrides into a {@link FractalConfig}. */
+/**
+ * Сборщик конфигурации: объединяет дефолты, JSON-конфиг и CLI-переопределения.
+ */
 public final class ConfigBuilder {
 
     private final FractalConfig.Builder delegate = FractalConfig.builder();
 
+    /**
+     * Применяет значения из JSON-конфига.
+     *
+     * @param jsonConfig конфигурация из JSON
+     * @return текущий сборщик
+     */
     public ConfigBuilder apply(JsonFractalConfig jsonConfig) {
         if (jsonConfig == null) {
             return this;
@@ -37,6 +45,12 @@ public final class ConfigBuilder {
         return this;
     }
 
+    /**
+     * Применяет значения из CLI поверх имеющихся.
+     *
+     * @param overrides значения, заданные в CLI
+     * @return текущий сборщик
+     */
     public ConfigBuilder apply(CliOverrides overrides) {
         Objects.requireNonNull(overrides, "overrides");
         if (overrides.width() != null) delegate.width(overrides.width());
@@ -60,12 +74,19 @@ public final class ConfigBuilder {
         return this;
     }
 
+    /**
+     * Строит финальную конфигурацию.
+     *
+     * @return итоговая конфигурация
+     */
     public FractalConfig build() {
         return delegate.build();
     }
 
 
-    /** Thin wrapper for CLI-sourced values: merged using "CLI wins over everything" policy. */
+    /**
+     * Контейнер CLI-переопределений: применяется по принципу "CLI важнее всего".
+     */
     public static final class CliOverrides {
         private Integer width;
         private Integer height;
@@ -84,130 +105,162 @@ public final class ConfigBuilder {
         private Boolean logGammaCorrection;
         private Integer symmetryLevel;
 
+        /** @return ширина, заданная в CLI. */
         public Integer width() {
             return width;
         }
 
+        /** @param width ширина изображения */
         public void setWidth(Integer width) {
             this.width = width;
         }
 
+        /** @return высота, заданная в CLI. */
         public Integer height() {
             return height;
         }
 
+        /** @param height высота изображения */
         public void setHeight(Integer height) {
             this.height = height;
         }
 
+        /** @return количество итераций, заданное в CLI. */
         public Long iterations() {
             return iterations;
         }
 
+        /** @param iterations число итераций */
         public void setIterations(Long iterations) {
             this.iterations = iterations;
         }
 
+        /** @return seed генератора */
         public Double seed() {
             return seed;
         }
 
+        /** @param seed seed генератора */
         public void setSeed(Double seed) {
             this.seed = seed;
         }
 
+        /** @return путь к выходному файлу */
         public Path outputPath() {
             return outputPath;
         }
 
+        /** @param outputPath путь к выходному файлу */
         public void setOutputPath(Path outputPath) {
             this.outputPath = outputPath;
         }
 
+        /** @return число потоков */
         public Integer threads() {
             return threads;
         }
 
+        /** @param threads число потоков */
         public void setThreads(Integer threads) {
             this.threads = threads;
         }
 
+        /** @return глобальные аффинные параметры */
         public AffineParams affineParams() {
             return affineParams;
         }
 
+        /** @param affineParams глобальные аффинные параметры */
         public void setAffineParams(AffineParams affineParams) {
             this.affineParams = affineParams;
         }
 
+        /** @return список вариаций */
         public List<VariationDefinition> variations() {
             return variations;
         }
 
+        /** @param variations список вариаций */
         public void setVariations(List<VariationDefinition> variations) {
             this.variations = variations;
         }
 
+        /** @return палитра */
         public Palette palette() {
             return palette;
         }
 
+        /** @param palette палитра */
         public void setPalette(Palette palette) {
             this.palette = palette;
         }
 
+        /** @return настройки камеры */
         public CameraSettings camera() {
             return camera;
         }
 
+        /** @param camera настройки камеры */
         public void setCamera(CameraSettings camera) {
             this.camera = camera;
         }
 
+        /** @return яркость */
         public Double brightness() {
             return brightness;
         }
 
+        /** @param brightness яркость */
         public void setBrightness(Double brightness) {
             this.brightness = brightness;
         }
 
+        /** @return количество итераций прогрева */
         public Long burnIn() {
             return burnIn;
         }
 
+        /** @param burnIn количество итераций прогрева */
         public void setBurnIn(Long burnIn) {
             this.burnIn = burnIn;
         }
 
+        /** @return гамма */
         public Double gamma() {
             return gamma;
         }
 
+        /** @param gamma гамма */
         public void setGamma(Double gamma) {
             this.gamma = gamma;
         }
 
+        /** @return флаг гамма-коррекции */
         public Boolean gammaCorrection() {
             return gammaCorrection;
         }
 
+        /** @param gammaCorrection флаг гамма-коррекции */
         public void setGammaCorrection(Boolean gammaCorrection) {
             this.gammaCorrection = gammaCorrection;
         }
 
+        /** @return флаг логарифмической гамма-коррекции */
         public Boolean logGammaCorrection() {
             return logGammaCorrection;
         }
 
+        /** @param logGammaCorrection флаг логарифмической гамма-коррекции */
         public void setLogGammaCorrection(Boolean logGammaCorrection) {
             this.logGammaCorrection = logGammaCorrection;
         }
 
+        /** @return уровень симметрии */
         public Integer symmetryLevel() {
             return symmetryLevel;
         }
 
+        /** @param symmetryLevel уровень симметрии */
         public void setSymmetryLevel(Integer symmetryLevel) {
             this.symmetryLevel = symmetryLevel;
         }
