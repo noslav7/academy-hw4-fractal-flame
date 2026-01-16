@@ -2,14 +2,10 @@ package academy.color;
 
 import java.awt.Color;
 
-/**
- * Цвет RGB, хранящийся в диапазоне [0, 1] для каждого канала.
- */
+/** Цвет RGB, хранящийся в диапазоне [0, 1] для каждого канала. */
 public record RgbColor(double r, double g, double b) {
 
-    /**
-     * Нормализует каналы в диапазон [0, 1].
-     */
+    /** Нормализует каналы в диапазон [0, 1]. */
     public RgbColor {
         double nr = clamp(r);
         double ng = clamp(g);
@@ -61,9 +57,7 @@ public record RgbColor(double r, double g, double b) {
         return (a << 24) | (red << 16) | (green << 8) | blue;
     }
 
-    /**
-     * Ограничивает значение диапазоном [0, 1].
-     */
+    /** Ограничивает значение диапазоном [0, 1]. */
     private static double clamp(double value) {
         if (Double.isNaN(value)) return 0.0;
         if (value < 0.0) return 0.0;
@@ -71,9 +65,7 @@ public record RgbColor(double r, double g, double b) {
         return value;
     }
 
-    /**
-     * Переводит значение канала в диапазон 0..255.
-     */
+    /** Переводит значение канала в диапазон 0..255. */
     private static int toChannel(double value) {
         return (int) Math.round(clamp(value) * 255.0);
     }

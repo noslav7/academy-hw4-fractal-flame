@@ -1,16 +1,14 @@
 package academy.config;
 
+import academy.util.StringValidators;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import academy.util.StringValidators;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import java.nio.file.Path;
 import java.util.List;
 import org.jspecify.annotations.NonNull;
 
-/**
- * DTO для JSON-конфига генератора фрактального пламени.
- */
+/** DTO для JSON-конфига генератора фрактального пламени. */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @SuppressFBWarnings(
         value = "UWF_UNWRITTEN_PUBLIC_OR_PROTECTED_FIELD",
@@ -60,9 +58,7 @@ public class JsonFractalConfig {
      */
     public record Size(Integer width, Integer height) {}
 
-    /**
-     * Описание одной вариации в JSON.
-     */
+    /** Описание одной вариации в JSON. */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JsonFunction {
         public String name;
@@ -87,9 +83,7 @@ public class JsonFractalConfig {
      */
     public record JsonColor(Double r, Double g, Double b) {}
 
-    /**
-     * Аффинные коэффициенты в JSON.
-     */
+    /** Аффинные коэффициенты в JSON. */
     public static class JsonAffineParams {
         public Double a;
         public Double b;
@@ -99,17 +93,13 @@ public class JsonFractalConfig {
         public Double f;
     }
 
-    /**
-     * Палитра в JSON.
-     */
+    /** Палитра в JSON. */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JsonPalette {
         public List<@NonNull JsonColor> colors;
     }
 
-    /**
-     * Настройки камеры в JSON.
-     */
+    /** Настройки камеры в JSON. */
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class JsonCamera {
         @JsonProperty("center_x")

@@ -19,9 +19,7 @@ import picocli.CommandLine.Command;
 import picocli.CommandLine.ExitCode;
 import picocli.CommandLine.Option;
 
-/**
- * Точка входа CLI: разбирает параметры, формирует конфигурацию и запускает рендер.
- */
+/** Точка входа CLI: разбирает параметры, формирует конфигурацию и запускает рендер. */
 @Command(name = "fractal-flame", version = "1.0")
 public class Application implements Callable<Integer> {
     private static final Logger LOGGER = LoggerFactory.getLogger(Application.class);
@@ -165,9 +163,7 @@ public class Application implements Callable<Integer> {
         return new ConfigBuilder().apply(jsonConfig).apply(overrides).build();
     }
 
-    /**
-     * Применяет дополнительные JVM-свойства, переданные через {@code -Dkey=value}.
-     */
+    /** Применяет дополнительные JVM-свойства, переданные через {@code -Dkey=value}. */
     private void applyUnmatchedSystemProperties() {
         if (unmatched == null || unmatched.isEmpty()) {
             return;

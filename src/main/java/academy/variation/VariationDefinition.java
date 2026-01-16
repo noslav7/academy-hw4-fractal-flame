@@ -22,9 +22,7 @@ public record VariationDefinition(
         AffineParams localAffine,
         VariationParameters parameters) {
 
-    /**
-     * Проверяет корректность значений.
-     */
+    /** Проверяет корректность значений. */
     public VariationDefinition {
         Objects.requireNonNull(type, "type");
         Objects.requireNonNull(color, "color");
@@ -38,9 +36,7 @@ public record VariationDefinition(
         }
     }
 
-    /**
-     * Создаёт вариацию без дополнительных параметров.
-     */
+    /** Создаёт вариацию без дополнительных параметров. */
     public VariationDefinition(
             VariationType type, double weight, RgbColor color, double colorIndex, AffineParams localAffine) {
         this(type, weight, color, colorIndex, localAffine, VariationParameters.empty());

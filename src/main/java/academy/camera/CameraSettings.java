@@ -23,9 +23,7 @@ public record CameraSettings(
     /** Набор значений по умолчанию. */
     public static final CameraSettings DEFAULT = new CameraSettings(0.0, 0.0, 1.0, 0.0, true, 0.1, 200_000L);
 
-    /**
-     * Проверяет корректность параметров камеры.
-     */
+    /** Проверяет корректность параметров камеры. */
     public CameraSettings {
         if (scale <= 0.0) throw new IllegalArgumentException("scale must be > 0");
         if (fitMargin < 0.0) throw new IllegalArgumentException("fitMargin must be >= 0");
@@ -33,5 +31,4 @@ public record CameraSettings(
             throw new IllegalArgumentException("fitSamples must be at least 10_000");
         }
     }
-
 }

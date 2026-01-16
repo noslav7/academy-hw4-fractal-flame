@@ -1,57 +1,55 @@
 package academy.render;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import academy.camera.CameraSettings;
 import academy.color.Palette;
 import academy.color.RgbColor;
 import academy.config.AffineParams;
 import academy.config.FractalConfig;
-import academy.camera.CameraSettings;
 import academy.variation.VariationDefinition;
 import academy.variation.VariationType;
 import java.awt.image.BufferedImage;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Тесты рендера и сохранения изображения.
- */
+/** Тесты рендера и сохранения изображения. */
 class FractalRendererTest extends BaseRenderTest {
 
-    /**
-     * Проверяет, что PNG записывается на диск.
-     */
+    /** Проверяет, что PNG записывается на диск. */
     @Test
     void givenValidConfigWhenRenderThenPngIsWritten(@TempDir Path tempDir) throws Exception {
         Path output = tempDir.resolve("flame.png");
-        FractalConfig config = baseConfig(output, 42.0, 2)
-                .affineParams(new AffineParams(0.8, 0.0, 0.0, 0.0, 0.8, 0.0))
-                .burnInIterations(500L)
-                .gamma(2.2)
-                .gammaCorrection(true)
+        RgbColor red = RgbColor.of(1.0, 0.0, 0.0);
+        VariationDefinition variation =
+                new VariationDefinition(VariationType.LINEAR, 1.0, red, 0.0, AffineParams.IDENTITY);
+        FractalConfig config = baseConfig(output, 42.0, 1)
+                .width(8)
+                .height(8)
+                .iterationCount(10L)
+                .affineParams(new AffineParams(0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
+                .variations(List.of(variation))
+                .palette(new Palette(List.of(red)))
+                .camera(new CameraSettings(0.0, 0.0, 1.0, 0.0, false, 0.1, 10_000L))
                 .build();
 
         new FractalRenderer().render(config);
 
-        assertAll(
-                () -> assertTrue(Files.exists(output), "Rendered image file should exist"),
-                () -> assertTrue(Files.size(output) > 0L, "Rendered image file should not be empty"));
+        BufferedImage actual = ImageIO.read(output.toFile());
+        int background = new RgbColor(0.0, 0.0, 0.0).toArgb(1.0);
+        int expectedColor = red.toArgb(1.0);
+        BufferedImage expected = buildExpectedImage(8, 8, background, new Pixel(4, 4, expectedColor));
+        assertImageEquals(expected, actual);
     }
 
-    /**
-     * Проверяет поведение симметрии (дублирование точек).
-     */
+    /** Проверяет поведение симметрии (дублирование точек). */
     @Test
     void givenSymmetryLevelWhenRenderThenRotatesPointCopies(@TempDir Path tempDir) throws Exception {
         Path output = tempDir.resolve("symmetry.png");
-        VariationDefinition variation = new VariationDefinition(
-                VariationType.LINEAR, 1.0, RgbColor.of(1.0, 0.0, 0.0), 0.0, AffineParams.IDENTITY);
+        RgbColor red = RgbColor.of(1.0, 0.0, 0.0);
+        VariationDefinition variation =
+                new VariationDefinition(VariationType.LINEAR, 1.0, red, 0.0, AffineParams.IDENTITY);
 
         FractalConfig config = baseConfig(output, 1.0, 1)
                 .width(32)
@@ -60,30 +58,30 @@ class FractalRendererTest extends BaseRenderTest {
                 // Force all iterations to land at (0.5, 0) for deterministic symmetry
                 .affineParams(new AffineParams(0.0, 0.0, 0.5, 0.0, 0.0, 0.0))
                 .variations(List.of(variation))
-                .palette(new Palette(List.of(RgbColor.of(1.0, 0.0, 0.0))))
+                .palette(new Palette(List.of(red)))
                 .symmetryLevel(4)
                 .camera(new CameraSettings(0.0, 0.0, 1.0, 0.0, false, 0.1, 200_000L))
                 .build();
 
         new FractalRenderer().render(config);
 
-        BufferedImage image = ImageIO.read(output.toFile());
+        BufferedImage actual = ImageIO.read(output.toFile());
         int background = new RgbColor(0.0, 0.0, 0.0).toArgb(1.0);
-        int nonBlackPixels = 0;
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                if (image.getRGB(x, y) != background) {
-                    nonBlackPixels++;
-                }
-            }
+        int expectedColor = red.toArgb(1.0);
+        double scale = 1.0 * (32 / 3.0);
+        Pixel[] expectedPixels = new Pixel[4];
+        double angleStep = 2 * Math.PI / 4;
+        for (int i = 0; i < 4; i++) {
+            double angle = i * angleStep;
+            double rotatedX = 0.5 * Math.cos(angle);
+            double rotatedY = 0.5 * Math.sin(angle);
+            expectedPixels[i] = projectToPixel(rotatedX, rotatedY, 32, 32, scale, expectedColor);
         }
-
-        assertEquals(4, nonBlackPixels, "Symmetry should replicate a point four times");
+        BufferedImage expected = buildExpectedImage(32, 32, background, expectedPixels);
+        assertImageEquals(expected, actual);
     }
 
-    /**
-     * Проверяет, что палитра применяется при рендеринге.
-     */
+    /** Проверяет, что палитра применяется при рендеринге. */
     @Test
     void givenSingleColorPaletteWhenRenderThenImageMatchesPalette(@TempDir Path tempDir) throws Exception {
         Path output = tempDir.resolve("palette.png");
@@ -94,7 +92,7 @@ class FractalRendererTest extends BaseRenderTest {
         FractalConfig config = baseConfig(output, 2.0, 1)
                 .width(24)
                 .height(24)
-                .iterationCount(500L)
+                .iterationCount(50L)
                 .affineParams(new AffineParams(0.0, 0.0, 0.4, 0.0, 0.0, 0.0))
                 .variations(List.of(variation))
                 .palette(new Palette(List.of(red)))
@@ -102,22 +100,18 @@ class FractalRendererTest extends BaseRenderTest {
 
         new FractalRenderer().render(config);
 
-        BufferedImage image = ImageIO.read(output.toFile());
-        int expected = red.toArgb(1.0);
-        int redPixels = 0;
-        int otherColors = 0;
-        for (int y = 0; y < image.getHeight(); y++) {
-            for (int x = 0; x < image.getWidth(); x++) {
-                int rgb = image.getRGB(x, y);
-                if (rgb == expected) {
-                    redPixels++;
-                } else if (rgb != new RgbColor(0.0, 0.0, 0.0).toArgb(1.0)) {
-                    otherColors++;
-                }
-            }
-        }
+        BufferedImage actual = ImageIO.read(output.toFile());
+        int background = new RgbColor(0.0, 0.0, 0.0).toArgb(1.0);
+        int expectedColor = red.toArgb(1.0);
+        double scale = 1.0 * (24 / 3.0);
+        Pixel expectedPixel = projectToPixel(0.4, 0.0, 24, 24, scale, expectedColor);
+        BufferedImage expected = buildExpectedImage(24, 24, background, expectedPixel);
+        assertImageEquals(expected, actual);
+    }
 
-        assertTrue(redPixels > 0, "Rendered image should contain palette color");
-        assertEquals(0, otherColors, "Only palette colors should appear in the image");
+    private Pixel projectToPixel(double x, double y, int width, int height, double scale, int argb) {
+        double screenX = width / 2.0 + x * scale;
+        double screenY = height / 2.0 - y * scale;
+        return new Pixel((int) screenX, (int) screenY, argb);
     }
 }

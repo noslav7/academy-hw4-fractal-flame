@@ -5,9 +5,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Отслеживает прогресс рендера и пишет лог при достижении порога.
- */
+/** Отслеживает прогресс рендера и пишет лог при достижении порога. */
 final class ProgressTracker {
     private static final Logger LOGGER = LoggerFactory.getLogger(ProgressTracker.class);
 

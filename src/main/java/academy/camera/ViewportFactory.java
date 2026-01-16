@@ -8,9 +8,7 @@ import java.util.SplittableRandom;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Фабрика, подбирающая {@link Viewport} с учётом настроек камеры и авто-подбора.
- */
+/** Фабрика, подбирающая {@link Viewport} с учётом настроек камеры и авто-подбора. */
 public final class ViewportFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ViewportFactory.class);
@@ -44,9 +42,7 @@ public final class ViewportFactory {
                 camera.rotationDegrees());
     }
 
-    /**
-     * Пытается автоматически подобрать масштаб и центр по выборке точек.
-     */
+    /** Пытается автоматически подобрать масштаб и центр по выборке точек. */
     private static Viewport tryAutoFit(FractalConfig config, CameraSettings camera) {
         BoundingBox bounds = sampleBoundingBox(config, camera.fitSamples());
         if (bounds == null || bounds.isEmpty()) {
@@ -75,9 +71,7 @@ public final class ViewportFactory {
         return new Viewport(config.width(), config.height(), centerX, centerY, scale, camera.rotationDegrees());
     }
 
-    /**
-     * Выполняет выборку точек и строит габариты.
-     */
+    /** Выполняет выборку точек и строит габариты. */
     private static BoundingBox sampleBoundingBox(FractalConfig config, long samples) {
         SplittableRandom random = new SplittableRandom(Double.doubleToLongBits(config.seed()));
         MutablePoint globalAffinePoint = new MutablePoint(0.0, 0.0);
@@ -100,9 +94,7 @@ public final class ViewportFactory {
         return box;
     }
 
-    /**
-     * Ограничивает точки для авто-подбора, чтобы избежать выбросов.
-     */
+    /** Ограничивает точки для авто-подбора, чтобы избежать выбросов. */
     private static boolean isWithinBounds(Point point) {
         if (!Double.isFinite(point.x()) || !Double.isFinite(point.y())) {
             return false;

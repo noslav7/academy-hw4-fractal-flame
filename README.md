@@ -64,6 +64,22 @@
 java -jar $JAR_PATH --seed 32.123531 -i 5000 -f swirl:1.0,horseshoe:0.8 -t 2
 ```
 
+Примеры команд для генерации файлов `test_output*.png` (совпадают с результатами в репозитории):
+
+```shell
+java -jar $JAR_PATH --config config/presets/flame.json -t 1 -o test_output_1_threads.png
+java -jar $JAR_PATH --config config/presets/flame.json -t 2 -o test_output_2_threads.png
+java -jar $JAR_PATH --config config/presets/flame.json -t 4 -o test_output_4_threads.png
+java -jar $JAR_PATH --config config/presets/flame.json -t 8 -o test_output_8_threads.png
+java -jar $JAR_PATH --config config/presets/flame.json -w 800 -h 600 -o test_output.png
+```
+
+Пример варианта для "linear":
+
+```shell
+java -jar $JAR_PATH --config config/presets/flame.json -o output/flame_linear.png -f "linear:1.0,swirl:0.2" --brightness 3.2 --gamma 1.6 --gamma-correction true
+```
+
 Так же входные параметры можно представить в виде JSON файла `config.json`:
 
 ```json

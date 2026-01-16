@@ -1,8 +1,6 @@
 package academy.math;
 
-/**
- * Изменяемая точка для снижения числа аллокаций в горячих циклах.
- */
+/** Изменяемая точка для снижения числа аллокаций в горячих циклах. */
 public final class MutablePoint {
     private double x;
     private double y;

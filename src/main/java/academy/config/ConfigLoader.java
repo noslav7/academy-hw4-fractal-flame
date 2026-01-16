@@ -7,9 +7,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
 
-/**
- * Загрузчик JSON-конфигурации из файла.
- */
+/** Загрузчик JSON-конфигурации из файла. */
 public final class ConfigLoader {
 
     private final ObjectMapper mapper;

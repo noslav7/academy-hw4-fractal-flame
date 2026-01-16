@@ -2,9 +2,7 @@ package academy.camera;
 
 import academy.math.Point;
 
-/**
- * Границы множества точек в двумерном пространстве.
- */
+/** Границы множества точек в двумерном пространстве. */
 public final class BoundingBox {
     private double minX = Double.POSITIVE_INFINITY;
     private double maxX = Double.NEGATIVE_INFINITY;

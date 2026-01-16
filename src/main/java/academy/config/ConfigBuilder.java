@@ -7,9 +7,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Сборщик конфигурации: объединяет дефолты, JSON-конфиг и CLI-переопределения.
- */
+/** Сборщик конфигурации: объединяет дефолты, JSON-конфиг и CLI-переопределения. */
 public final class ConfigBuilder {
 
     private final FractalConfig.Builder delegate = FractalConfig.builder();
@@ -83,10 +81,7 @@ public final class ConfigBuilder {
         return delegate.build();
     }
 
-
-    /**
-     * Контейнер CLI-переопределений: применяется по принципу "CLI важнее всего".
-     */
+    /** Контейнер CLI-переопределений: применяется по принципу "CLI важнее всего". */
     public static final class CliOverrides {
         private Integer width;
         private Integer height;
@@ -265,5 +260,4 @@ public final class ConfigBuilder {
             this.symmetryLevel = symmetryLevel;
         }
     }
-
 }

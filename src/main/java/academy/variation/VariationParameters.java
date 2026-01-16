@@ -3,24 +3,18 @@ package academy.variation;
 import java.util.Collections;
 import java.util.Map;
 
-/**
- * Параметры вариации в виде неизменяемой карты.
- */
+/** Параметры вариации в виде неизменяемой карты. */
 public final class VariationParameters {
     private static final VariationParameters EMPTY = new VariationParameters(Collections.emptyMap());
 
     private final Map<String, Double> values;
 
-    /**
-     * Создаёт контейнер параметров.
-     */
+    /** Создаёт контейнер параметров. */
     private VariationParameters(Map<String, Double> values) {
         this.values = values;
     }
 
-    /**
-     * Возвращает пустой набор параметров.
-     */
+    /** Возвращает пустой набор параметров. */
     public static VariationParameters empty() {
         return EMPTY;
     }

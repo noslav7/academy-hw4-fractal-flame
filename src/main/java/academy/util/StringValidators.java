@@ -2,9 +2,7 @@ package academy.util;
 
 import java.util.Objects;
 
-/**
- * Утилиты валидации строковых значений.
- */
+/** Утилиты валидации строковых значений. */
 public final class StringValidators {
     private StringValidators() {}
 

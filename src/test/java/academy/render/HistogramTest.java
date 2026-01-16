@@ -6,16 +6,12 @@ import academy.color.RgbColor;
 import java.awt.image.BufferedImage;
 import org.junit.jupiter.api.Test;
 
-/**
- * Тесты преобразования гистограммы в изображение.
- */
+/** Тесты преобразования гистограммы в изображение. */
 class HistogramTest {
 
-    /**
-     * Проверяет, что логарифмическая гамма уменьшает контраст.
-     */
+    /** Проверяет, что логарифмическая гамма уменьшает контраст. */
     @Test
-    void logarithmicGammaCompressesDynamicRange() {
+    void givenMultipleHitsWhenLogGammaThenContrastIsReduced() {
         Histogram histogram = new Histogram(2, 1);
         // Left pixel gets four hits, right pixel one hit to create a noticeable contrast.
         histogram.addPoint(0, 0, RgbColor.of(1.0, 1.0, 1.0));
@@ -31,28 +27,25 @@ class HistogramTest {
         int linearRight = channel(linear, 1, 0);
         int logLeft = channel(logarithmic, 0, 0);
         int logRight = channel(logarithmic, 1, 0);
+        int linearDiff = linearLeft - linearRight;
+        int logDiff = logLeft - logRight;
 
-        assertTrue(
-                linearLeft - linearRight > logLeft - logRight,
-                "Logarithmic correction should reduce contrast compared to linear scaling");
+        assertTrue(linearDiff > logDiff, "Logarithmic correction should reduce contrast compared to linear scaling");
     }
 
-    /**
-     * Проверяет корректность логарифмической гаммы на единственном попадании.
-     */
+    /** Проверяет корректность логарифмической гаммы на единственном попадании. */
     @Test
-    void logarithmicGammaHandlesSingleHit() {
+    void givenSingleHitWhenLogGammaThenPixelRemainsVisible() {
         Histogram histogram = new Histogram(1, 1);
         histogram.addPoint(0, 0, RgbColor.of(1.0, 0.0, 0.0));
 
         BufferedImage result = histogram.toImage(2.2, false, true, 1.0);
+        int redChannel = channel(result, 0, 0);
 
-        assertTrue(channel(result, 0, 0) > 0, "Single hit should remain visible after log scaling");
+        assertTrue(redChannel > 0, "Single hit should remain visible after log scaling");
     }
 
-    /**
-     * Возвращает красный канал пикселя.
-     */
+    /** Возвращает красный канал пикселя. */
     private static int channel(BufferedImage image, int x, int y) {
         return (image.getRGB(x, y) >> 16) & 0xFF;
     }

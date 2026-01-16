@@ -8,9 +8,7 @@ import academy.variation.VariationType;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Утилиты для парсинга строковых параметров CLI.
- */
+/** Утилиты для парсинга строковых параметров CLI. */
 public final class CliParsers {
     private CliParsers() {}
 
@@ -29,7 +27,8 @@ public final class CliParsers {
         if (raw == null || raw.isBlank()) {
             return null;
         }
-        String normalized = StringValidators.requireLength(raw, "functions", FUNCTIONS_MIN_LENGTH, FUNCTIONS_MAX_LENGTH);
+        String normalized =
+                StringValidators.requireLength(raw, "functions", FUNCTIONS_MIN_LENGTH, FUNCTIONS_MAX_LENGTH);
         String[] tokens = normalized.split(",");
         List<VariationDefinition> variations = new ArrayList<>();
         int index = 0;

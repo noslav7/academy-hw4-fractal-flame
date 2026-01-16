@@ -8,9 +8,7 @@ import academy.variation.VariationSelector;
 import java.util.Objects;
 import java.util.SplittableRandom;
 
-/**
- * Выполняет один шаг итерации фрактального пламени.
- */
+/** Выполняет один шаг итерации фрактального пламени. */
 public final class FractalSampler {
     private final FractalConfig config;
     private final VariationSelector selector;
@@ -41,8 +39,10 @@ public final class FractalSampler {
         Objects.requireNonNull(globalAffinePoint, "globalAffinePoint");
         Objects.requireNonNull(localAffinePoint, "localAffinePoint");
         VariationDefinition variation = selector.pick(random.nextDouble());
-        Point afterGlobal = config.affineParams().apply(current, globalAffinePoint).toImmutable();
-        Point afterLocal = variation.localAffine().apply(afterGlobal, localAffinePoint).toImmutable();
+        Point afterGlobal =
+                config.affineParams().apply(current, globalAffinePoint).toImmutable();
+        Point afterLocal =
+                variation.localAffine().apply(afterGlobal, localAffinePoint).toImmutable();
         Point nextPoint = variation.type().apply(afterLocal, variation, random);
         return new StepResult(nextPoint, variation);
     }

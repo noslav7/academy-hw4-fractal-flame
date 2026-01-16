@@ -3,9 +3,7 @@ package academy.color;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Палитра цветов, используемая для интерполяции по индексу.
- */
+/** Палитра цветов, используемая для интерполяции по индексу. */
 public final class Palette {
     private final List<RgbColor> colors;
 
@@ -58,9 +56,7 @@ public final class Palette {
                 start.b() * (1 - fraction) + end.b() * fraction);
     }
 
-    /**
-     * Нормализует значение в диапазон [0..1).
-     */
+    /** Нормализует значение в диапазон [0..1). */
     private static double normalize(double value) {
         double v = value % 1.0;
         if (v < 0) v += 1.0;

@@ -5,9 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.nio.file.Path;
 import java.util.List;
 
-/**
- * Источник дефолтных вариаций из JSON-пресета.
- */
+/** Источник дефолтных вариаций из JSON-пресета. */
 final class VariationFactory {
 
     private VariationFactory() {}

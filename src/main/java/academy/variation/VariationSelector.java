@@ -4,9 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Выбирает вариацию по весам.
- */
+/** Выбирает вариацию по весам. */
 public final class VariationSelector {
 
     private final List<WeightedVariation> weightedVariations;
@@ -46,9 +44,7 @@ public final class VariationSelector {
         return weightedVariations.get(weightedVariations.size() - 1).definition();
     }
 
-    /**
-     * Строит список кумулятивных весов.
-     */
+    /** Строит список кумулятивных весов. */
     private static List<WeightedVariation> buildWeightedVariations(List<VariationDefinition> definitions) {
         List<WeightedVariation> result = new ArrayList<>(definitions.size());
         double cumulative = 0.0;
@@ -59,9 +55,7 @@ public final class VariationSelector {
         return List.copyOf(result);
     }
 
-    /**
-     * Ограничивает вероятность диапазоном {@code [0, 1)}.
-     */
+    /** Ограничивает вероятность диапазоном {@code [0, 1)}. */
     private static double clampProbability(double value) {
         if (Double.isNaN(value) || value < 0.0) {
             return 0.0;
@@ -72,8 +66,6 @@ public final class VariationSelector {
         return value;
     }
 
-    /**
-     * Пара вариации и накопленного веса.
-     */
+    /** Пара вариации и накопленного веса. */
     private record WeightedVariation(VariationDefinition definition, double cumulativeWeight) {}
 }

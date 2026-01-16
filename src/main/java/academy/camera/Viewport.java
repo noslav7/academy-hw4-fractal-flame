@@ -2,9 +2,7 @@ package academy.camera;
 
 import academy.math.Point;
 
-/**
- * Проекция из мировых координат в экранные с учётом центра, масштаба и поворота.
- */
+/** Проекция из мировых координат в экранные с учётом центра, масштаба и поворота. */
 public final class Viewport {
     private final int width;
     private final int height;

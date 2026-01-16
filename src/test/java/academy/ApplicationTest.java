@@ -1,22 +1,21 @@
 package academy;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import picocli.CommandLine;
 
-/**
- * Проверяет работу CLI приложения.
- */
+/** Проверяет работу CLI приложения. */
 class ApplicationTest {
 
-    /**
-     * Проверяет, что CLI параметры применяются и PNG сохраняется.
-     */
+    /** Проверяет, что CLI параметры применяются и PNG сохраняется. */
+    @Tag("sanity")
     @Test
     void givenCliOptionsWhenExecuteThenRendersAndAppliesSystemProps(@TempDir Path tempDir) {
         Path output = tempDir.resolve("cli.png");
@@ -51,8 +50,9 @@ class ApplicationTest {
                         "--log-gamma-correction",
                         "-Dapp.custom=on");
 
-        assertEquals(0, exitCode);
-        assertTrue(Files.exists(output));
-        assertEquals("on", System.getProperty("app.custom"));
+        assertAll(
+                () -> assertEquals(0, exitCode),
+                () -> assertTrue(Files.exists(output)),
+                () -> assertEquals("on", System.getProperty("app.custom")));
     }
 }

@@ -6,9 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import javax.imageio.ImageIO;
 
-/**
- * Сохраняет изображение на диск.
- */
+/** Сохраняет изображение на диск. */
 final class ImageWriter {
     private ImageWriter() {}
 

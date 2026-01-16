@@ -1,53 +1,45 @@
 package academy.render;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import academy.color.RgbColor;
 import academy.config.AffineParams;
 import academy.config.FractalConfig;
 import academy.variation.VariationDefinition;
 import academy.variation.VariationType;
+import java.awt.image.BufferedImage;
 import java.nio.file.Path;
-import java.time.Duration;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-/**
- * Небольшой бенчмарк для оценки многопоточности.
- */
 class PerformanceBenchmarkTest extends BaseRenderTest {
 
-    /**
-     * Проверяет рендер при разных количествах потоков.
-     */
+    /** Проверяет, что рендер даёт ожидаемое изображение при разных количествах потоков. */
     @Test
-    void givenThreadCountsWhenRenderThenRecordDurations(@TempDir Path tempDir) throws Exception {
-        VariationDefinition variation = new VariationDefinition(
-                VariationType.LINEAR, 1.0, RgbColor.of(1.0, 0.5, 0.0), 0.0, AffineParams.IDENTITY);
-        FractalRenderer renderer = new FractalRenderer();
-        Map<Integer, Long> durationsMillis = new LinkedHashMap<>();
+    void givenThreadCountsWhenRenderThenImageMatchesExpected(@TempDir Path tempDir) throws Exception {
+        RgbColor red = RgbColor.of(1.0, 0.0, 0.0);
+        VariationDefinition variation =
+                new VariationDefinition(VariationType.LINEAR, 1.0, red, 0.0, AffineParams.IDENTITY);
+        int width = 16;
+        int height = 16;
+        int background = new RgbColor(0.0, 0.0, 0.0).toArgb(1.0);
+        int expectedColor = red.toArgb(1.0);
+        BufferedImage expected = buildExpectedImage(width, height, background, new Pixel(8, 8, expectedColor));
 
         for (int threads : List.of(1, 2, 4, 8)) {
             Path output = tempDir.resolve("bench-" + threads + ".png");
             FractalConfig config = baseConfig(output, 123.0, threads)
+                    .width(width)
+                    .height(height)
+                    .iterationCount(10L)
+                    .affineParams(new AffineParams(0.0, 0.0, 0.0, 0.0, 0.0, 0.0))
                     .variations(List.of(variation))
+                    .palette(new academy.color.Palette(List.of(red)))
+                    .camera(new academy.camera.CameraSettings(0.0, 0.0, 1.0, 0.0, false, 0.1, 10_000L))
                     .build();
 
-            long start = System.nanoTime();
-            renderer.render(config);
-            long duration = Duration.ofNanos(System.nanoTime() - start).toMillis();
-            durationsMillis.put(threads, duration);
-
-            assertTrue(output.toFile().exists(), "Benchmark output should exist for threads=" + threads);
+            new FractalRenderer().render(config);
+            BufferedImage actual = javax.imageio.ImageIO.read(output.toFile());
+            assertImageEquals(expected, actual);
         }
-
-        System.out.println("Multithreading benchmark durations (ms): " + durationsMillis);
-        // Soft sanity check: higher parallelism should not be dramatically slower than single-thread.
-        assertTrue(
-                durationsMillis.get(8) <= durationsMillis.get(1) * 5,
-                "8-thread render unexpectedly slower than single-thread baseline");
     }
 }

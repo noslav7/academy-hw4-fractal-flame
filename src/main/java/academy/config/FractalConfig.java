@@ -47,9 +47,7 @@ public record FractalConfig(
         boolean logGammaCorrection,
         int symmetryLevel) {
 
-    /**
-     * Проверяет корректность значений конфигурации.
-     */
+    /** Проверяет корректность значений конфигурации. */
     public FractalConfig {
         Objects.requireNonNull(outputPath, "outputPath");
         Objects.requireNonNull(affineParams, "affineParams");
@@ -108,9 +106,7 @@ public record FractalConfig(
         return builder().build();
     }
 
-    /**
-     * Сборщик конфигурации с дефолтными значениями.
-     */
+    /** Сборщик конфигурации с дефолтными значениями. */
     public static final class Builder {
         private Integer width;
         private Integer height;
@@ -288,13 +284,9 @@ public record FractalConfig(
         }
     }
 
-    /**
-     * Поставляет набор вариаций по умолчанию.
-     */
+    /** Поставляет набор вариаций по умолчанию. */
     private static final class DefaultVariations {
-        /**
-         * Создаёт список вариаций по умолчанию.
-         */
+        /** Создаёт список вариаций по умолчанию. */
         private static List<VariationDefinition> create() {
             return Collections.unmodifiableList(VariationFactory.defaultVariations());
         }

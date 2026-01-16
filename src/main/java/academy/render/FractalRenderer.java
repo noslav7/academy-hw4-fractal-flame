@@ -21,9 +21,7 @@ import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Рендерер фрактального пламени: запускает расчёт и сохраняет изображение.
- */
+/** Рендерер фрактального пламени: запускает расчёт и сохраняет изображение. */
 public final class FractalRenderer {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FractalRenderer.class);
@@ -83,9 +81,7 @@ public final class FractalRenderer {
                 .log("Render completed");
     }
 
-    /**
-     * Рабочая задача, вычисляющая часть гистограммы.
-     */
+    /** Рабочая задача, вычисляющая часть гистограммы. */
     private static final class Worker implements Callable<Histogram> {
         private final FractalConfig config;
         private final long iterations;
@@ -94,9 +90,7 @@ public final class FractalRenderer {
         private final Viewport viewport;
         private final FractalSampler sampler;
 
-        /**
-         * Создаёт воркер для выполнения части итераций.
-         */
+        /** Создаёт воркер для выполнения части итераций. */
         private Worker(FractalConfig config, long iterations, ProgressTracker tracker, Viewport viewport, long seed) {
             this.config = config;
             this.iterations = iterations;
@@ -107,9 +101,7 @@ public final class FractalRenderer {
         }
 
         @Override
-        /**
-         * Выполняет рендеринг своей части и возвращает гистограмму.
-         */
+        /** Выполняет рендеринг своей части и возвращает гистограмму. */
         public Histogram call() {
             Histogram histogram = new Histogram(viewport.width(), viewport.height());
             MutablePoint globalAffinePoint = new MutablePoint(0.0, 0.0);
@@ -120,7 +112,8 @@ public final class FractalRenderer {
             long processed = 0;
             long plotted = 0;
             for (long iteration = 0; iteration < iterations; iteration++) {
-                FractalSampler.StepResult step = sampler.step(currentPoint, random, globalAffinePoint, localAffinePoint);
+                FractalSampler.StepResult step =
+                        sampler.step(currentPoint, random, globalAffinePoint, localAffinePoint);
                 VariationDefinition variation = step.variation();
                 currentPoint = step.point();
                 colorIndex = (colorIndex + variation.colorIndex()) * 0.5;
@@ -143,9 +136,7 @@ public final class FractalRenderer {
             return histogram;
         }
 
-        /**
-         * Добавляет точку с учётом симметрии.
-         */
+        /** Добавляет точку с учётом симметрии. */
         private void plotWithSymmetry(Histogram histogram, Point point, RgbColor color) {
             int symmetry = config.symmetryLevel();
             if (symmetry <= 1) {
@@ -161,9 +152,7 @@ public final class FractalRenderer {
             }
         }
 
-        /**
-         * Добавляет одну точку в гистограмму.
-         */
+        /** Добавляет одну точку в гистограмму. */
         private void plotSingle(Histogram histogram, Point point, RgbColor color) {
             Viewport.ScreenPoint screen = viewport.project(point);
             if (screen.isInside()) {

@@ -7,10 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.SplittableRandom;
 
-/**
- * Набор вариаций фрактального пламени (по Draves).
- * Каждая вариация преобразует декартову точку в новую координату.
- */
+/** Набор вариаций фрактального пламени (по Draves). Каждая вариация преобразует декартову точку в новую координату. */
 public enum VariationType {
     LINEAR("linear") {
         @Override
@@ -189,9 +186,9 @@ public enum VariationType {
      * @return соответствующий тип вариации
      */
     public static VariationType fromSymbol(String value) {
-        String normalized =
-                StringValidators.requireLength(value, "variation symbol", SYMBOL_MIN_LENGTH, SYMBOL_MAX_LENGTH)
-                        .toLowerCase(Locale.ROOT);
+        String normalized = StringValidators.requireLength(
+                        value, "variation symbol", SYMBOL_MIN_LENGTH, SYMBOL_MAX_LENGTH)
+                .toLowerCase(Locale.ROOT);
         VariationType type = BY_SYMBOL.get(normalized);
         if (type == null) {
             throw new IllegalArgumentException("Unknown variation: " + value);
@@ -199,9 +196,7 @@ public enum VariationType {
         return type;
     }
 
-    /**
-     * Строит карту "символ -> тип вариации".
-     */
+    /** Строит карту "символ -> тип вариации". */
     private static Map<String, VariationType> buildSymbolIndex() {
         Map<String, VariationType> result = new HashMap<>();
         for (VariationType type : values()) {
@@ -215,16 +210,12 @@ public enum VariationType {
         return Map.copyOf(result);
     }
 
-    /**
-     * Возвращает квадрат радиуса.
-     */
+    /** Возвращает квадрат радиуса. */
     private static double radiusSquared(Point point) {
         return point.x() * point.x() + point.y() * point.y();
     }
 
-    /**
-     * Возвращает радиус точки.
-     */
+    /** Возвращает радиус точки. */
     private static double hypot(Point point) {
         return Math.hypot(point.x(), point.y());
     }

@@ -134,6 +134,34 @@ foreach ($cfg in $presets) {
 
 PowerShell последовательно прогонит список и сохранит PNG с уникальными именами.
 
+### 6.1 Тестовые изображения (совпадают с `test_output*.png`)
+
+Ниже команды, которые генерируют те же файлы, что сейчас лежат в корне проекта.
+Используется пресет `flame.json` (1.5M итераций, яркость/гамма/симметрия).
+
+```powershell
+# 1920×1080, разное число потоков
+java -jar target/project-1.0.jar --config config/presets/flame.json -t 1 -o test_output_1_threads.png
+java -jar target/project-1.0.jar --config config/presets/flame.json -t 2 -o test_output_2_threads.png
+java -jar target/project-1.0.jar --config config/presets/flame.json -t 4 -o test_output_4_threads.png
+java -jar target/project-1.0.jar --config config/presets/flame.json -t 8 -o test_output_8_threads.png
+
+# 800×600 для быстрого просмотра
+java -jar target/project-1.0.jar --config config/presets/flame.json -w 800 -h 600 -o test_output.png
+```
+
+### 6.2 Пример `flame_linear`
+
+```powershell
+java -jar target/project-1.0.jar `
+  --config config/presets/flame.json `
+  -o output/flame_linear.png `
+  -f "linear:1.0,swirl:0.2" `
+  --brightness 3.2 `
+  --gamma 1.6 `
+  --gamma-correction true
+```
+
 ### 7. Частые вопросы
 
 - **“Unknown variation”** — убедитесь, что имя функции совпадает с одним из перечисленных выше.
