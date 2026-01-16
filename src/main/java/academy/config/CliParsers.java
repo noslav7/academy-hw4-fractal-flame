@@ -16,8 +16,6 @@ public final class CliParsers {
 
     private static final int FUNCTIONS_MIN_LENGTH = 3;
     private static final int FUNCTIONS_MAX_LENGTH = 10_000;
-    private static final int SYMBOL_MIN_LENGTH = 1;
-    private static final int SYMBOL_MAX_LENGTH = 32;
     private static final int WEIGHT_MIN_LENGTH = 1;
     private static final int WEIGHT_MAX_LENGTH = 32;
 
@@ -41,7 +39,7 @@ public final class CliParsers {
             if (pair.length != 2) {
                 throw new IllegalArgumentException("Invalid function token: " + token);
             }
-            String name = StringValidators.requireLength(pair[0], "variation symbol", SYMBOL_MIN_LENGTH, SYMBOL_MAX_LENGTH);
+            String name = pair[0];
             String weightValue =
                     StringValidators.requireLength(pair[1], "variation weight", WEIGHT_MIN_LENGTH, WEIGHT_MAX_LENGTH);
             double weight = Double.parseDouble(weightValue);

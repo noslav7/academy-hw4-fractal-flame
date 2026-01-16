@@ -4,11 +4,11 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import academy.camera.CameraSettings;
 import academy.color.Palette;
 import academy.color.RgbColor;
 import academy.config.AffineParams;
 import academy.config.FractalConfig;
+import academy.camera.CameraSettings;
 import academy.variation.VariationDefinition;
 import academy.variation.VariationType;
 import java.awt.image.BufferedImage;
@@ -22,7 +22,7 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Тесты рендера и сохранения изображения.
  */
-class FractalRendererTest {
+class FractalRendererTest extends BaseRenderTest {
 
     /**
      * Проверяет, что PNG записывается на диск.
@@ -30,18 +30,11 @@ class FractalRendererTest {
     @Test
     void givenValidConfigWhenRenderThenPngIsWritten(@TempDir Path tempDir) throws Exception {
         Path output = tempDir.resolve("flame.png");
-        FractalConfig config = FractalConfig.builder()
-                .width(64)
-                .height(64)
-                .iterationCount(5_000L)
-                .threads(2)
-                .seed(42.0)
-                .outputPath(output)
+        FractalConfig config = baseConfig(output, 42.0, 2)
                 .affineParams(new AffineParams(0.8, 0.0, 0.0, 0.0, 0.8, 0.0))
                 .burnInIterations(500L)
                 .gamma(2.2)
                 .gammaCorrection(true)
-                .symmetryLevel(1)
                 .build();
 
         new FractalRenderer().render(config);
@@ -60,20 +53,14 @@ class FractalRendererTest {
         VariationDefinition variation = new VariationDefinition(
                 VariationType.LINEAR, 1.0, RgbColor.of(1.0, 0.0, 0.0), 0.0, AffineParams.IDENTITY);
 
-        FractalConfig config = FractalConfig.builder()
+        FractalConfig config = baseConfig(output, 1.0, 1)
                 .width(32)
                 .height(32)
                 .iterationCount(10L)
-                .threads(1)
-                .seed(1.0)
-                .outputPath(output)
                 // Force all iterations to land at (0.5, 0) for deterministic symmetry
                 .affineParams(new AffineParams(0.0, 0.0, 0.5, 0.0, 0.0, 0.0))
                 .variations(List.of(variation))
-                .burnInIterations(0L)
                 .palette(new Palette(List.of(RgbColor.of(1.0, 0.0, 0.0))))
-                .gammaCorrection(false)
-                .logGammaCorrection(false)
                 .symmetryLevel(4)
                 .camera(new CameraSettings(0.0, 0.0, 1.0, 0.0, false, 0.1, 200_000L))
                 .build();
@@ -104,21 +91,13 @@ class FractalRendererTest {
         VariationDefinition variation =
                 new VariationDefinition(VariationType.LINEAR, 1.0, red, 0.0, AffineParams.IDENTITY);
 
-        FractalConfig config = FractalConfig.builder()
+        FractalConfig config = baseConfig(output, 2.0, 1)
                 .width(24)
                 .height(24)
                 .iterationCount(500L)
-                .threads(1)
-                .seed(2.0)
-                .outputPath(output)
                 .affineParams(new AffineParams(0.0, 0.0, 0.4, 0.0, 0.0, 0.0))
                 .variations(List.of(variation))
-                .burnInIterations(0L)
                 .palette(new Palette(List.of(red)))
-                .gammaCorrection(false)
-                .logGammaCorrection(false)
-                .symmetryLevel(1)
-                .camera(new CameraSettings(0.0, 0.0, 1.0, 0.0, false, 0.1, 10_000L))
                 .build();
 
         new FractalRenderer().render(config);

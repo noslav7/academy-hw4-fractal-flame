@@ -2,7 +2,6 @@ package academy.render;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import academy.color.Palette;
 import academy.color.RgbColor;
 import academy.config.AffineParams;
 import academy.config.FractalConfig;
@@ -19,7 +18,7 @@ import org.junit.jupiter.api.io.TempDir;
 /**
  * Небольшой бенчмарк для оценки многопоточности.
  */
-class PerformanceBenchmarkTest {
+class PerformanceBenchmarkTest extends BaseRenderTest {
 
     /**
      * Проверяет рендер при разных количествах потоков.
@@ -33,20 +32,8 @@ class PerformanceBenchmarkTest {
 
         for (int threads : List.of(1, 2, 4, 8)) {
             Path output = tempDir.resolve("bench-" + threads + ".png");
-            FractalConfig config = FractalConfig.builder()
-                    .width(64)
-                    .height(64)
-                    .iterationCount(5_000L)
-                    .threads(threads)
-                    .seed(123.0)
-                    .outputPath(output)
-                    .affineParams(AffineParams.IDENTITY)
+            FractalConfig config = baseConfig(output, 123.0, threads)
                     .variations(List.of(variation))
-                    .burnInIterations(0L)
-                    .palette(new Palette(List.of(RgbColor.of(1.0, 0.5, 0.0))))
-                    .gammaCorrection(false)
-                    .logGammaCorrection(false)
-                    .symmetryLevel(1)
                     .build();
 
             long start = System.nanoTime();

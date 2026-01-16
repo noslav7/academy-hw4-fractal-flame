@@ -3,7 +3,6 @@ package academy.config;
 import academy.camera.CameraSettings;
 import academy.color.Palette;
 import academy.color.RgbColor;
-import academy.util.StringValidators;
 import academy.variation.VariationDefinition;
 import academy.variation.VariationParameters;
 import academy.variation.VariationType;
@@ -15,9 +14,6 @@ import java.util.List;
  */
 final class JsonConfigMapper {
     private JsonConfigMapper() {}
-
-    private static final int SYMBOL_MIN_LENGTH = 1;
-    private static final int SYMBOL_MAX_LENGTH = 32;
 
     /**
      * Преобразует JSON-аффинные коэффициенты.
@@ -55,9 +51,7 @@ final class JsonConfigMapper {
             if (function == null || function.name == null || function.weight == null) {
                 continue;
             }
-            String symbol =
-                    StringValidators.requireLength(function.name, "variation symbol", SYMBOL_MIN_LENGTH, SYMBOL_MAX_LENGTH);
-            VariationType type = VariationType.fromSymbol(symbol);
+            VariationType type = VariationType.fromSymbol(function.name);
             RgbColor color = colorFrom(function.color, index);
             double colorIndex = function.colorIndex != null ? function.colorIndex : Math.min(0.99, index / 12.0);
             AffineParams localAffine = toAffine(function.affine);
