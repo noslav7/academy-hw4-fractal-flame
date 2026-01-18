@@ -27,6 +27,12 @@ class VariationSelectorTest {
         assertThrows(IllegalArgumentException.class, () -> new VariationSelector(List.of()));
     }
 
+    /** Проверяет, что null-список запрещён. */
+    @Test
+    void givenNullListWhenConstructedThenThrows() {
+        assertThrows(NullPointerException.class, () -> new VariationSelector(null));
+    }
+
     /** Проверяет выбор при единственной вариации. */
     @ParameterizedTest
     @MethodSource("singleVariationPicks")
@@ -54,6 +60,18 @@ class VariationSelectorTest {
         assertEquals(expected, selector.pick(value));
     }
 
+    /** Проверяет fallback на последнюю вариацию при NaN весах. */
+    @Test
+    void givenNaNWeightsWhenPickThenFallsBackToLast() {
+        VariationDefinition broken = new VariationDefinition(
+                VariationType.LINEAR, Double.NaN, RgbColor.of(0, 0, 1), 0.0, AffineParams.IDENTITY);
+        VariationDefinition fallback =
+                new VariationDefinition(VariationType.SWIRL, 1.0, RgbColor.of(1, 1, 0), 0.0, AffineParams.IDENTITY);
+        VariationSelector selector = new VariationSelector(List.of(broken, fallback));
+
+        assertEquals(fallback, selector.pick(0.5));
+    }
+
     private static Stream<@NonNull Arguments> singleVariationPicks() {
         return Stream.of(Arguments.of(0.0), Arguments.of(0.9));
     }
@@ -64,6 +82,10 @@ class VariationSelectorTest {
     }
 
     private static Stream<@NonNull Arguments> outOfRangePicks() {
-        return Stream.of(Arguments.of(Double.NaN, ONE), Arguments.of(-0.5, ONE), Arguments.of(5.0, THREE));
+        return Stream.of(
+                Arguments.of(Double.NaN, ONE),
+                Arguments.of(-0.5, ONE),
+                Arguments.of(1.0, THREE),
+                Arguments.of(5.0, THREE));
     }
 }

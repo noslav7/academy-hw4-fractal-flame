@@ -45,7 +45,7 @@ public final class ViewportFactory {
     /** Пытается автоматически подобрать масштаб и центр по выборке точек. */
     private static Viewport tryAutoFit(FractalConfig config, CameraSettings camera) {
         BoundingBox bounds = sampleBoundingBox(config, camera.fitSamples());
-        if (bounds == null || bounds.isEmpty()) {
+        if (bounds.isEmpty()) {
             return null;
         }
         double margin = camera.fitMargin();
@@ -89,7 +89,6 @@ public final class ViewportFactory {
         }
         if (box.isEmpty()) {
             LOGGER.warn("Auto-fit bounding box was empty after sampling");
-            return null;
         }
         return box;
     }

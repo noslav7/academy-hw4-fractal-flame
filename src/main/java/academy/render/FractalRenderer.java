@@ -16,7 +16,6 @@ import java.util.SplittableRandom;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,44 +40,45 @@ public final class FractalRenderer {
                 .log("Starting render");
 
         Viewport viewport = ViewportFactory.create(config);
-        ExecutorService executor = Executors.newFixedThreadPool(config.threads());
-        List<Future<Histogram>> futures = new ArrayList<>();
-        long iterationsPerThread = config.iterationCount() / config.threads();
-        long remainder = config.iterationCount() % config.threads();
-        ProgressTracker tracker = new ProgressTracker(config.iterationCount());
-        for (int i = 0; i < config.threads(); i++) {
-            long iterations = iterationsPerThread + (i < remainder ? 1 : 0);
-            int workerIndex = i;
-            futures.add(executor.submit(new Worker(
-                    config,
-                    iterations,
-                    tracker,
-                    viewport,
-                    Double.doubleToLongBits(config.seed()) + workerIndex * 997)));
-        }
-        executor.shutdown();
-
-        Histogram merged = new Histogram(viewport.width(), viewport.height());
-        for (Future<Histogram> future : futures) {
-            try {
-                merged.merge(future.get());
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new IllegalStateException("Render interrupted", e);
-            } catch (ExecutionException e) {
-                throw new IllegalStateException("Render failed", e.getCause());
+        try (ExecutorServiceResource pool = new ExecutorServiceResource(config.threads())) {
+            ExecutorService executor = pool.get();
+            List<Future<Histogram>> futures = new ArrayList<>();
+            long iterationsPerThread = config.iterationCount() / config.threads();
+            long remainder = config.iterationCount() % config.threads();
+            ProgressTracker tracker = new ProgressTracker(config.iterationCount());
+            for (int i = 0; i < config.threads(); i++) {
+                long iterations = iterationsPerThread + (i < remainder ? 1 : 0);
+                int workerIndex = i;
+                futures.add(executor.submit(new Worker(
+                        config,
+                        iterations,
+                        tracker,
+                        viewport,
+                        Double.doubleToLongBits(config.seed()) + workerIndex * 997)));
             }
+
+            Histogram merged = new Histogram(viewport.width(), viewport.height());
+            for (Future<Histogram> future : futures) {
+                try {
+                    merged.merge(future.get());
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new IllegalStateException("Render interrupted", e);
+                } catch (ExecutionException e) {
+                    throw new IllegalStateException("Render failed", e.getCause());
+                }
+            }
+
+            var image = merged.toImage(
+                    config.gamma(), config.gammaCorrection(), config.logGammaCorrection(), config.brightness());
+            ImageWriter.write(config.outputPath(), image);
+
+            Duration duration = Duration.between(start, Instant.now());
+            LOGGER.atInfo()
+                    .addKeyValue("durationSeconds", duration.toMillis() / 1000.0)
+                    .addKeyValue("output", config.outputPath())
+                    .log("Render completed");
         }
-
-        var image = merged.toImage(
-                config.gamma(), config.gammaCorrection(), config.logGammaCorrection(), config.brightness());
-        ImageWriter.write(config.outputPath(), image);
-
-        Duration duration = Duration.between(start, Instant.now());
-        LOGGER.atInfo()
-                .addKeyValue("durationSeconds", duration.toMillis() / 1000.0)
-                .addKeyValue("output", config.outputPath())
-                .log("Render completed");
     }
 
     /** Рабочая задача, вычисляющая часть гистограммы. */
