@@ -1,6 +1,7 @@
 package academy.camera;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import academy.color.Palette;
 import academy.color.RgbColor;
@@ -140,7 +141,7 @@ class ViewportFactoryTest {
 
         boolean result = (boolean) method.invoke(null, new Point(1.0, Double.NaN));
 
-        assertEquals(false, result);
+        assertFalse(result);
     }
 
     /** Проверяет fallback при слишком маленьком масштабе авто-подбора. */

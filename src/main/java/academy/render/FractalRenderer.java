@@ -16,6 +16,7 @@ import java.util.SplittableRandom;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,8 +41,7 @@ public final class FractalRenderer {
                 .log("Starting render");
 
         Viewport viewport = ViewportFactory.create(config);
-        try (ExecutorServiceResource pool = new ExecutorServiceResource(config.threads())) {
-            ExecutorService executor = pool.get();
+        try (ExecutorService executor = Executors.newFixedThreadPool(config.threads())) {
             List<Future<Histogram>> futures = new ArrayList<>();
             long iterationsPerThread = config.iterationCount() / config.threads();
             long remainder = config.iterationCount() % config.threads();
